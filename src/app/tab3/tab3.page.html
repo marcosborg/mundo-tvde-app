@@ -1,0 +1,127 @@
+<app-header></app-header>
+
+<ion-content>
+    <ion-card>
+        <ion-card-content>
+            <ion-segment [(ngModel)]="segment" value="documents">
+                <ion-segment-button value="documents">
+                    <ion-label>Documentos</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="send">
+                    <ion-label>Enviar</ion-label>
+                </ion-segment-button>
+            </ion-segment>
+        </ion-card-content>
+        <div *ngIf="segment == 'documents'">
+            <ion-card-header>
+                <ion-card-title>Meus Documentos</ion-card-title>
+                <ion-card-subtitle>Lista de documentos enviados à empresa</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-list *ngIf="my_documents">
+                    <ion-item *ngFor="let citizen_card of my_documents.citizen_card; let i = index" button="true"
+                        (click)="openDocument(citizen_card)">
+                        <ion-label>
+                            Cartão de cidadão ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item
+                        *ngFor="let tvde_driver_certificate of my_documents.tvde_driver_certificate; let i = index"
+                        button="true" (click)="openDocument(tvde_driver_certificate)">
+                        <ion-label>
+                            Certificado de motorista TVDE ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let criminal_record of my_documents.criminal_record; let i = index" button="true"
+                        (click)="openDocument(criminal_record)">
+                        <ion-label>
+                            Certificado de registo criminal ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngIf="my_documents.profile_picture" button="true"
+                        (click)="openDocument(my_documents.profile_picture)">
+                        <ion-label>
+                            Fotografia de perfil
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let driving_license of my_documents.driving_license; let i = index" button="true"
+                        (click)="openDocument(driving_license)">
+                        <ion-label>
+                            Carta de condução ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let iban of my_documents.iban; let i = index" button="true"
+                        (click)="openDocument(iban)">
+                        <ion-label>
+                            Comprovativo de IBAN ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let address of my_documents.address; let i = index" button="true"
+                        (click)="openDocument(address)">
+                        <ion-label>
+                            Comprovativo de morada ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let dua_vehicle of my_documents.dua_vehicle; let i = index" button="true"
+                        (click)="openDocument(dua_vehicle)">
+                        <ion-label>
+                            DUA Viatura ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngFor="let car_insurance of my_documents.car_insurance; let i = index" button="true"
+                        (click)="openDocument(car_insurance)">
+                        <ion-label>
+                            Seguro Viatura ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                    <ion-item lines="none" *ngFor="let ipo_vehicle of my_documents.ipo_vehicle; let i = index"
+                        button="true" (click)="openDocument(ipo_vehicle)">
+                        <ion-label>
+                            IPO Viatura ({{ i + 1 }})
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-card-content>
+        </div>
+        <div *ngIf="segment == 'send'">
+            <ion-card-header>
+                <ion-card-title>Enviar Documentos</ion-card-title>
+                <ion-card-subtitle>Escolha o tipo de documentos que pretende enviar e anexe o
+                    ficheiro</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                <form (submit)="onFileUpload()">
+                    <ion-item lines="none">
+                        <ion-select label="Tipo de documento" placeholder="Selecionar" [(ngModel)]="selectedFileType">
+                            <ion-select-option *ngFor="let file_type of file_types"
+                                value="{{ file_type.collection_name }}">{{ file_type.name }}</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                    <!-- Campo de entrada escondido -->
+                    <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.jpg,.png"
+                        style="display: none;" />
+                    <!-- Botão estilizado -->
+                    <div *ngIf="!selectedFile">
+                        <ion-button expand="block" color="primary" (click)="fileInput.click()">
+                            Carregar Ficheiro do telemóvel
+                        </ion-button>
+                        <ion-button expand="block" (click)="captureImage()" color="primary">
+                            Tirar fotografia
+                        </ion-button>
+                    </div>
+                    <div *ngIf="selectedFile">
+                        <!-- Botão de enviar -->
+                        <ion-button expand="block" type="button" color="danger" (click)="selectedFile = null">
+                            Eliminar
+                        </ion-button>
+                        <ion-button expand="block" type="submit" color="success">
+                            Enviar
+                        </ion-button>
+                    </div>
+                </form>
+            </ion-card-content>
+        </div>
+    </ion-card>
+    
+</ion-content>
+<app-chat></app-chat>

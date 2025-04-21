@@ -1,0 +1,23 @@
+<app-public-header></app-public-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card *ngFor="let car of standCars" class="car-card" (click)="openCarDetails(car.id)">
+    <div class="car-image-container">
+      <ion-img [src]="car.images[0]?.original_url" alt="Imagem da viatura"></ion-img>
+      <div class="car-overlay">
+        <h2>{{ car.brand.name }} {{ car.car_model.name }}</h2>
+        <p>{{ car.year }} - {{ car.fuel.name }} - {{ car.transmision }}</p>
+      </div>
+    </div>
+
+    <ion-card-content>
+      <p><strong>Localização:</strong> {{ car.distance }}</p>
+      <p><strong>Quilómetros:</strong> {{ car.kilometers | number }} km</p>
+      <p><strong>Potência:</strong> {{ car.power }} cv</p>
+      <p class="price">Preço: {{ car.price | currency: 'EUR':'symbol':'1.0-0' }}</p>
+    </ion-card-content>
+  </ion-card>
+
+
+</ion-content>

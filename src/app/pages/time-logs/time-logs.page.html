@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">
+      <ion-img src="../../../assets/logo-header.png" class="logo-header"></ion-img>
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="onLogout()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngFor="let timeLog of timeLogs">
+    <ion-card-header>
+      <ion-card-title>Dia: {{ timeLog.date }}</ion-card-title>
+      <ion-card-subtitle>Tempo de condução: {{ timeLog.drivingTime }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-list>
+      <ion-item *ngFor="let timePeriod of timeLog.timePeriods">
+        <ion-label>{{ timePeriod.created_at | date: 'dd/MM/yyyy' }} {{ timePeriod.created_at | date: 'HH:mm' }}</ion-label>
+        <ion-note>{{ changeLabel(timePeriod.status) }}</ion-note>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ion-content>

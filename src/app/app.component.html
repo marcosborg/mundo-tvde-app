@@ -1,0 +1,31 @@
+<ion-app id="main-content">
+  <ion-router-outlet></ion-router-outlet>
+</ion-app>
+
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Mundo TVDE</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/home" routerDirection="root" detail="false">Início</ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item  *ngIf="access_token" routerLink="/tabs" routerDirection="root" detail="false">Área do motorista</ion-item>
+        <ion-item  *ngIf="!access_token" routerLink="/login" routerDirection="root" detail="false">Área do motorista</ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/cars" routerDirection="root" detail="false">Aluguer de viaturas</ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/stand-cars" routerDirection="root" detail="false">Stand</ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>

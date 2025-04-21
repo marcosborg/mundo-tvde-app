@@ -1,0 +1,33 @@
+<app-public-header></app-public-header>
+
+<ion-content>
+  <div *ngIf="hero_banner" class="hero-banner" style="position: relative; text-align: center;">
+    <ion-img src="{{ hero_banner.image.original_url }}" style="filter: brightness(50%);"></ion-img>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;">
+      <ion-text class="ion-padding">
+        <h3 style="font-size: 30px;">{{ hero_banner.title }}</h3>
+        <h4 style="font-size: 20px;">{{ hero_banner.subtitle }}</h4>
+      </ion-text>
+    </div>
+  </div>
+
+  <swiper-container slides-per-view="2" loop="true" autoplay-delay="2500" autoplay-disable-on-interaction="false"
+    space-between="5" class="ion-padding-top">
+    <swiper-slide *ngFor="let article of articles">
+      <ion-card (click)="goArticle(article.id)" routerDirection="root" detail="false">
+        <ion-img [src]="article.photo.original_url"></ion-img>
+        <ion-card-header>
+          <ion-card-title>{{ article.title }}</ion-card-title>
+        </ion-card-header>
+      </ion-card>
+    </swiper-slide>
+  </swiper-container>
+
+
+  <ion-card *ngIf="home_info">
+    <ion-card-header>
+      <ion-card-title>{{ home_info.description }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content [innerHtml]="home_info.text"></ion-card-content>
+  </ion-card>
+</ion-content>
