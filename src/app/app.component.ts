@@ -50,7 +50,6 @@ export class AppComponent {
       .subscribe(() => {
         this.preferences.checkName('access_token').then((resp: any) => {
           this.access_token = resp.value;
-          console.log('Access Token:', this.access_token);
         });
       });
   }
@@ -58,7 +57,6 @@ export class AppComponent {
   ngOnInit() {
     this.preferences.checkName('access_token').then((resp: any) => {
       this.access_token = resp.value;
-      console.log('Access Token:', this.access_token);
     });
   }
 }

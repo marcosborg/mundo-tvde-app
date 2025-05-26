@@ -7,7 +7,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class ApiService {
 
-  sandbox: boolean = false;
+  sandbox: boolean = true;
   baseUrl: string;
 
   constructor(
@@ -154,4 +154,15 @@ export class ApiService {
     };
     return this.http.get(this.baseUrl + 'app/time-log/get-time-logs', this.httpOptions);
   }
+
+  // Chat - Assistente Virtual (Bot ID 2)
+  assistenteVirtual(data: { email: string; conversation: any[] }) {
+    return this.http.post(this.baseUrl + 'assistente-virtual', data, this.httpOptions);
+  }
+
+  getWebsiteMessages(email: string) {
+    return this.http.get<any[]>(this.baseUrl + 'website-messages/' + encodeURIComponent(email), this.httpOptions);
+  }
+
+
 }

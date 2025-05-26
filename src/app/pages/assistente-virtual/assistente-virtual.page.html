@@ -1,0 +1,38 @@
+<app-public-header></app-public-header>
+
+<ion-content class="ion-padding">
+  <ng-container *ngIf="!started">
+    <ion-text color="medium">
+      <p>Antes de começarmos, por favor introduza o seu email:</p>
+    </ion-text>
+    <ion-item>
+      <ion-input [(ngModel)]="email" type="email" placeholder="exemplo@email.com"></ion-input>
+    </ion-item>
+    <ion-button expand="block" (click)="startChat()">Iniciar Conversa</ion-button>
+  </ng-container>
+
+  <ng-container *ngIf="started">
+    <div class="chat-container" #chatBox>
+      <div *ngFor="let msg of conversation">
+        <ion-chip *ngIf="msg.role === 'user'" color="success" class="user-message">
+          <ion-label>{{ msg.content }}</ion-label>
+        </ion-chip>
+        <ion-chip *ngIf="msg.role === 'assistant'" color="danger" class="assistant-message">
+          <ion-label>{{ msg.content }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+  </ng-container>
+</ion-content>
+
+<ion-footer *ngIf="started">
+  <ion-toolbar>
+    <ion-item class="no-lines">
+      <ion-input [(ngModel)]="message" placeholder="Escreva a sua pergunta..." (keyup.enter)="sendMessage()" [disabled]="loading"></ion-input>
+      <ion-button slot="end" (click)="sendMessage()" [disabled]="loading">
+        <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+        <span *ngIf="!loading">Enviar</span>
+      </ion-button>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>
