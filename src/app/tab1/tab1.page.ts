@@ -89,7 +89,7 @@ export class Tab1Page {
             this.activityLaunches = resp.activityLaunches;
             this.last_receipt = resp.last_receipt;
             this.total = resp.total;
-            this.value = this.last_receipt ? this.last_receipt.value : 0;
+            this.value = resp.total ?? 0;
             this.can_create_receipt = resp.can_create_receipt;
             loading.dismiss();
           }, (err) => {
