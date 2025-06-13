@@ -70,7 +70,10 @@ export class StandCarsPage implements OnInit {
   }
 
   openCarDetails(car_id: any) {
-    
+    const url = `https://mundotvde.pt/tvde/stand/${String(car_id)}`;
+    window.open(url, '_system'); // Abre no browser externo
   }
+
+
 
 }

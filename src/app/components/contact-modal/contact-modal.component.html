@@ -1,0 +1,48 @@
+<ion-content class="ion-padding">
+
+  <h2>Pedido de contacto</h2>
+
+  <h3><strong>{{ carTitle }}</strong></h3>
+  <h4>{{ carSubtitle }}</h4>
+  <hr>
+
+  <ion-item>
+    <ion-input label="Nome" [(ngModel)]="name" name="name" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Telefone" [(ngModel)]="phone" name="phone" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Email" type="email" [(ngModel)]="email" name="email" required></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input label="Cidade" [(ngModel)]="city" name="city" required></ion-input>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-checkbox slot="start" [(ngModel)]="tvde" name="tvde"></ion-checkbox>
+    <ion-label>Tem cartão TVDE?</ion-label>
+  </ion-item>
+
+  <ion-item *ngIf="tvde">
+    <ion-input label="Número do cartão" [(ngModel)]="tvde_card" name="tvde_card"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-textarea label="Mensagem" [(ngModel)]="message" name="message"></ion-textarea>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-checkbox slot="start" [(ngModel)]="rgpd" name="rgpd"></ion-checkbox>
+    <ion-label>Autorizo o tratamento dos dados fornecidos</ion-label>
+  </ion-item>
+
+  <div class="ion-padding-top ion-text-end">
+    <ion-button color="medium" fill="outline" (click)="close()">Cancelar</ion-button>
+    <ion-button (click)="submit()">Pedir contacto</ion-button>
+  </div>
+
+</ion-content>

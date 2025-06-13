@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
   IonToolbar,
   IonGrid,
   IonRow,
@@ -15,7 +15,7 @@ import {
   IonCardTitle,
   IonCardSubtitle,
   IonCardContent,
- } from '@ionic/angular/standalone';
+} from '@ionic/angular/standalone';
 import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { PublicHeaderComponent } from 'src/app/components/public-header/public-header.component';
@@ -27,11 +27,11 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./cars.page.scss'],
   standalone: true,
   imports: [
-    IonContent, 
-    IonHeader, 
-    IonTitle, 
-    IonToolbar, 
-    CommonModule, 
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
     FormsModule,
     PublicHeaderComponent,
     IonGrid,
@@ -67,6 +67,10 @@ export class CarsPage implements OnInit {
         loading.dismiss();
       });
     });
+  }
+
+  goCar(car: any) {
+    this.router.navigate(['/car', car.id]);
   }
 
 }

@@ -37,6 +37,10 @@ export class ApiService {
     return this.http.get(this.baseUrl + 'public/cars', this.httpOptions);
   }
 
+  car(car_id: any) {
+    return this.http.get(this.baseUrl + 'public/car/' + car_id, this.httpOptions);
+  }
+
   standCars() {
     return this.http.get(this.baseUrl + 'public/stand-cars', this.httpOptions);
   }
@@ -163,6 +167,11 @@ export class ApiService {
   getWebsiteMessages(email: string) {
     return this.http.get<any[]>(this.baseUrl + 'website-messages/' + encodeURIComponent(email), this.httpOptions);
   }
+
+  carRentalContact(data: any) {
+    return this.http.post(this.baseUrl + 'public/car-rental-contact', data, this.httpOptions);
+  }
+
 
 
 }

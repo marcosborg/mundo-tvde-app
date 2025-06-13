@@ -1,0 +1,30 @@
+<app-public-header></app-public-header>
+
+<ion-content class="ion-padding">
+
+  <swiper-container slides-per-view="1" pagination="true" navigation="true" class="car-swiper">
+    <swiper-slide *ngFor="let photo of car?.photo">
+      <img [src]="photo.url" alt="Imagem da viatura" class="car-image" />
+    </swiper-slide>
+  </swiper-container>
+
+  <ion-card *ngIf="car">
+    <ion-card-header>
+      <ion-card-title>{{ car.title }}</ion-card-title>
+      <ion-card-subtitle>{{ car.subtitle }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div [innerHTML]="car.specifications"></div>
+      <ion-text color="primary">
+        <h2 style="margin-top: 1rem;">Preço: {{ car.price }} €</h2>
+      </ion-text>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" color="primary" (click)="openContactModal()">
+    Pedir contacto
+  </ion-button>
+
+
+</ion-content>
