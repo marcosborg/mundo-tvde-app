@@ -38,10 +38,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/assistente-virtual/assistente-virtual.page').then( m => m.AssistenteVirtualPage)
   },
   {
-    path: 'assistente-motorista',
-    loadComponent: () => import('./pages/assistente-motorista/assistente-motorista.page').then( m => m.AssistenteMotoristaPage)
-  },
-  {
     path: 'car/:car_id',
     loadComponent: () => import('./pages/car/car.page').then( m => m.CarPage)
   },

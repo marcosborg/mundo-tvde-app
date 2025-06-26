@@ -172,6 +172,4 @@ export class ApiService {
     return this.http.post(this.baseUrl + 'public/car-rental-contact', data, this.httpOptions);
   }
 
-
-
 }
