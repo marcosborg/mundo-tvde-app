@@ -7,7 +7,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class ApiService {
 
-  sandbox: boolean = false;
+  sandbox: boolean = true;
   baseUrl: string;
 
   constructor(
@@ -167,6 +167,29 @@ export class ApiService {
   getWebsiteMessages(email: string) {
     return this.http.get<any[]>(this.baseUrl + 'website-messages/' + encodeURIComponent(email), this.httpOptions);
   }
+
+  assistenteMotorista(data: { conversation: any[] }, access_token: string) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept-Language': 'pt',
+        'Authorization': 'Bearer ' + access_token
+      })
+    };
+
+    return this.http.post(this.baseUrl + 'assistente-motorista', data, httpOptions);
+  }
+
+  getMotoristaMessages(access_token: string) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept-Language': 'pt',
+        'Authorization': 'Bearer ' + access_token
+      })
+    };
+
+    return this.http.get<any[]>(this.baseUrl + 'motorista-messages', httpOptions);
+  }
+
 
   carRentalContact(data: any) {
     return this.http.post(this.baseUrl + 'public/car-rental-contact', data, this.httpOptions);

@@ -1,0 +1,28 @@
+<app-public-header></app-public-header>
+
+<ion-content class="ion-padding">
+  <div class="chat-container" #chatBox [hidden]="!started">
+    <div *ngFor="let msg of conversation">
+      <ion-chip *ngIf="msg.role === 'user'" color="success" class="user-message">
+        <ion-label>{{ msg.content }}</ion-label>
+      </ion-chip>
+      <ion-chip *ngIf="msg.role === 'assistant'" color="danger" class="assistant-message">
+        <ion-label>{{ msg.content }}</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer [hidden]="!started">
+  <ion-toolbar>
+    <ion-item class="no-lines">
+      <input [(ngModel)]="message" placeholder="Escreva a sua pergunta..." (keyup.enter)="sendMessage()"
+        [disabled]="loading || !started" style="flex: 1; border: none; outline: none; font-size: 16px;" />
+      <ion-button slot="end" (click)="sendMessage()" [disabled]="loading || !started">
+        <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+        <span *ngIf="!loading">Enviar</span>
+      </ion-button>
+    </ion-item>
+
+  </ion-toolbar>
+</ion-footer>

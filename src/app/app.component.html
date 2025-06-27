@@ -29,11 +29,18 @@
         <ion-item routerLink="/stand-cars" routerDirection="root" detail="false">Stand</ion-item>
       </ion-menu-toggle>
 
-      <ion-menu-toggle auto-hide="true">
+      <ion-menu-toggle auto-hide="true" *ngIf="!access_token">
         <ion-item routerLink="/assistente-virtual" routerDirection="root" detail="false">
           Assistente Virtual
         </ion-item>
       </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true" *ngIf="access_token">
+        <ion-item routerLink="/assistente-motorista" routerDirection="root" detail="false">
+          Assistente motorista Mundo TVDE
+        </ion-item>
+      </ion-menu-toggle>
+
     </ion-list>
   </ion-content>
 </ion-menu>
