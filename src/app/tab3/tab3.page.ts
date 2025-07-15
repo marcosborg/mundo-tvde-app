@@ -64,6 +64,7 @@ export class Tab3Page {
   selectedFile: File | null = null;
   my_documents: any;
   selectedFileType: any = null;
+  myContracts: any = [];
 
   file_types: any = [
     { collection_name: 'citizen_card', name: 'Cartão de Cidadão' },
@@ -96,9 +97,12 @@ export class Tab3Page {
           access_token: this.access_token
         }
         this.api.myDocuments(data).subscribe((resp) => {
-          loading.dismiss();
           this.my_documents = resp;
-          console.log('Meus documentos:', this.my_documents);
+          this.api.contracts(data).subscribe((resp) => {
+            loading.dismiss();
+            this.myContracts = resp;
+            console.log('Meus contratos:', this.myContracts);
+          });
         });
       }
     });
@@ -213,6 +217,10 @@ export class Tab3Page {
 
   openDocument(document: any) {
     window.open(document.original_url, '_blank');
+  }
+
+  openContract(url: any) {
+    window.open(url, '_blank');
   }
 
 }

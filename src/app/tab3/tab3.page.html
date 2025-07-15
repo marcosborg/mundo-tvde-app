@@ -10,6 +10,9 @@
                 <ion-segment-button value="send">
                     <ion-label>Enviar</ion-label>
                 </ion-segment-button>
+                <ion-segment-button value="contract">
+                    <ion-label>Contratos</ion-label>
+                </ion-segment-button>
             </ion-segment>
         </ion-card-content>
         <div *ngIf="segment == 'documents'">
@@ -119,6 +122,28 @@
                         </ion-button>
                     </div>
                 </form>
+            </ion-card-content>
+        </div>
+        <div *ngIf="segment == 'contract'">
+            <ion-card-header>
+                <ion-card-title>Contratos</ion-card-title>
+                <ion-card-subtitle>Confira aqui os contratos que leu e assinou</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-list *ngIf="myContracts">
+                    <ion-item button="true"
+                        (click)="openContract(myContracts.contract)">
+                        <ion-label>
+                            Contrato
+                        </ion-label>
+                    </ion-item>
+                    <ion-item button="true"
+                        (click)="openContract(myContracts.statement_of_responsibilities)">
+                        <ion-label>
+                            Declaração de responsabilidade
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
             </ion-card-content>
         </div>
     </ion-card>
