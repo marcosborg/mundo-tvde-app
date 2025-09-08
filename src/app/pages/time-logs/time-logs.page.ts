@@ -25,7 +25,6 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
   IonCardSubtitle,
 } from '@ionic/angular/standalone';
 
@@ -53,7 +52,6 @@ import {
     IonCard,
     IonCardHeader,
     IonCardTitle,
-    IonCardContent,
     IonCardSubtitle,
   ]
 })

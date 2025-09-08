@@ -4,9 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
   IonImg,
   IonButton,
 } from '@ionic/angular/standalone';
@@ -21,9 +18,6 @@ import { ApiService } from 'src/app/services/api.service';
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     CommonModule,
     FormsModule,
     PublicHeaderComponent,

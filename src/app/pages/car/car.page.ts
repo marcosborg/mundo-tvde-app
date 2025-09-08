@@ -3,9 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
 import { PublicHeaderComponent } from 'src/app/components/public-header/public-header.component';
 import { ActivatedRoute } from '@angular/router';
@@ -25,9 +22,6 @@ import { ContactModalComponent } from 'src/app/components/contact-modal/contact-
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     CommonModule,
     FormsModule,
     PublicHeaderComponent,

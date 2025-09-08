@@ -31,7 +31,6 @@ import { CommonModule } from '@angular/common';
     IonToolbar,
     IonTitle,
     IonMenuToggle,
-    IonButton,
     IonList,
     IonItem,
     CommonModule

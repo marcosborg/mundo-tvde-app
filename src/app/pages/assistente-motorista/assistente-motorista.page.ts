@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
   IonToolbar,
   IonChip,
   IonLabel,
@@ -26,8 +24,6 @@ import { LoadingController } from '@ionic/angular';
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
     IonToolbar,
     CommonModule,
     FormsModule,

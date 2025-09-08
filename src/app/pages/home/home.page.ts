@@ -5,16 +5,12 @@ import { PublicHeaderComponent } from '../../components/public-header/public-hea
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
   IonImg,
   IonText,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
 } from '@ionic/angular/standalone';
 import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -28,9 +24,6 @@ import { ApiService } from 'src/app/services/api.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     CommonModule,
     FormsModule,
     PublicHeaderComponent,
@@ -40,7 +33,6 @@ import { ApiService } from 'src/app/services/api.service';
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonCardSubtitle,
   ]
 })
 export class HomePage implements OnInit {

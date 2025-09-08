@@ -3,17 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonCard,
   IonImg,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
   IonCardContent,
 } from '@ionic/angular/standalone';
 import { LoadingController } from '@ionic/angular';
@@ -28,20 +19,11 @@ import { ApiService } from 'src/app/services/api.service';
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
     CommonModule,
     FormsModule,
     PublicHeaderComponent,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonCard,
     IonImg,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
     IonCardContent,
   ]
 })
