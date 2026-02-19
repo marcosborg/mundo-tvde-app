@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoadingController } from '@ionic/angular';
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +11,16 @@ export class ApiService {
 
   sandbox: boolean = true;
   baseUrl: string;
+  private readonly productionBaseUrl = 'https://mundotvde.pt/api/';
+  private readonly localApiPort = '8000';
+  private readonly apiPath = '/api/';
 
   constructor(
     private http: HttpClient,
     private loadingController: LoadingController,
   ) {
-    this.baseUrl = this.sandbox ? 'http://127.0.0.1:8000/api/' : 'https://mundotvde.pt/api/';
+    this.baseUrl = this.sandbox ? this.resolveSandboxBaseUrl() : this.productionBaseUrl;
+    this.applyRuntimeBaseUrlOverride();
   }
 
   httpOptions = {
@@ -22,6 +28,73 @@ export class ApiService {
       'Accept-Language': 'pt'
     })
   };
+
+  private resolveSandboxBaseUrl(): string {
+    const platform = Capacitor.getPlatform();
+    const localhostBase = `http://127.0.0.1:${this.localApiPort}${this.apiPath}`;
+
+    // Browser dev (ionic serve)
+    if (platform === 'web') {
+      const host = window?.location?.hostname || '127.0.0.1';
+      const resolvedHost = host === 'localhost' ? '127.0.0.1' : host;
+      return `http://${resolvedHost}:${this.localApiPort}${this.apiPath}`;
+    }
+
+    // Android emulator maps host machine localhost to 10.0.2.2
+    if (platform === 'android') {
+      return `http://10.0.2.2:${this.localApiPort}${this.apiPath}`;
+    }
+
+    // iOS simulator can access host localhost directly
+    if (platform === 'ios') {
+      return localhostBase;
+    }
+
+    return localhostBase;
+  }
+
+  private async applyRuntimeBaseUrlOverride() {
+    if (!this.sandbox) {
+      return;
+    }
+
+    const override = await Preferences.get({ key: 'api_base_url' });
+    if (override?.value) {
+      this.baseUrl = this.normalizeBaseUrl(override.value);
+    }
+  }
+
+  async setRuntimeBaseUrl(baseUrl: string): Promise<void> {
+    const normalized = this.normalizeBaseUrl(baseUrl);
+    this.baseUrl = normalized;
+    await Preferences.set({ key: 'api_base_url', value: normalized });
+  }
+
+  async clearRuntimeBaseUrl(): Promise<void> {
+    await Preferences.remove({ key: 'api_base_url' });
+    this.baseUrl = this.sandbox ? this.resolveSandboxBaseUrl() : this.productionBaseUrl;
+  }
+
+  private normalizeBaseUrl(baseUrl: string): string {
+    let value = (baseUrl || '').trim();
+    if (!value) {
+      return this.resolveSandboxBaseUrl();
+    }
+
+    if (!/^https?:\/\//i.test(value)) {
+      value = `http://${value}`;
+    }
+
+    if (!value.endsWith('/')) {
+      value += '/';
+    }
+
+    if (!value.toLowerCase().endsWith('/api/')) {
+      value = value.replace(/\/+$/, '') + '/api/';
+    }
+
+    return value;
+  }
 
   //PUBLIC
 
