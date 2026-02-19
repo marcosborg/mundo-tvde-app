@@ -31,6 +31,7 @@
     "@capacitor/ios": "7.2.0",
     "@capacitor/keyboard": "latest",
     "@capacitor/preferences": "^7.0.1",
+    "@capacitor/push-notifications": "^7.0.1",
     "@capacitor/status-bar": "latest",
     "@ionic/angular": "^8.0.0",
     "chart.js": "^4.4.9",

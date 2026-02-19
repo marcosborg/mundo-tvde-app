@@ -1,0 +1,101 @@
+<app-header></app-header>
+
+<ion-content>
+  <ion-card *ngIf="openedFromPush && notificationAssignmentId">
+    <ion-card-header>
+      <ion-card-title>Notificacao recebida</ion-card-title>
+      <ion-card-subtitle>Inspecao referenciada: #{{ notificationAssignmentId }}</ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+
+  <ion-card *ngIf="!assignment">
+    <ion-card-header>
+      <ion-card-title>Inspecao</ion-card-title>
+      <ion-card-subtitle>Sem inspecoes pendentes neste momento.</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" (click)="loadInspection()">Atualizar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ng-container *ngIf="assignment">
+    <ion-card *ngIf="notificationAssignmentId && assignment.id !== notificationAssignmentId" color="warning">
+      <ion-card-header>
+        <ion-card-title>Aviso</ion-card-title>
+        <ion-card-subtitle>
+          A notificacao era para a inspeção #{{ notificationAssignmentId }}, mas a proxima disponível é a #{{ assignment.id }}.
+        </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Inspecao #{{ assignment.id }}</ion-card-title>
+        <ion-card-subtitle>
+          Viatura: {{ assignment.vehicle?.license_plate || '-' }} | Estado: {{ assignment.status }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let angle of requiredAngles">
+            <ion-label>
+              <strong>{{ angle }}</strong>
+              <p>{{ isAngleDone(angle) ? 'Concluido' : 'Em falta' }}</p>
+            </ion-label>
+            <ion-button slot="end" size="small" (click)="takePhoto(angle)">Fotografar</ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Danos e observacoes</ion-card-title>
+        <ion-card-subtitle>Adicione ocorrencias encontradas na viatura.</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-textarea
+            label="Observacoes gerais"
+            labelPlacement="stacked"
+            [(ngModel)]="summaryNotes"
+            placeholder="Resumo da inspecao">
+          </ion-textarea>
+        </ion-item>
+
+        <div class="defect-list">
+          <div class="defect-item" *ngFor="let defect of defects; let i = index">
+            <ion-item>
+              <ion-input label="Titulo" labelPlacement="stacked" [(ngModel)]="defect.title"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-select label="Severidade" labelPlacement="stacked" [(ngModel)]="defect.severity">
+                <ion-select-option value="non_critical">Nao critico</ion-select-option>
+                <ion-select-option value="critical">Critico</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-textarea label="Descricao" labelPlacement="stacked" [(ngModel)]="defect.description"></ion-textarea>
+            </ion-item>
+            <ion-button size="small" color="danger" fill="outline" (click)="removeDefect(i)">Remover dano</ion-button>
+          </div>
+        </div>
+
+        <ion-button expand="block" fill="outline" (click)="addDefect()">Adicionar dano</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Fila offline</ion-card-title>
+        <ion-card-subtitle>{{ queueCount }} foto(s) pendentes de sincronizacao</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button expand="block" fill="outline" (click)="syncQueue()">Sincronizar agora</ion-button>
+        <ion-button expand="block" color="success" (click)="submitInspection()">Submeter inspecao</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+</ion-content>
+
+<app-chat></app-chat>

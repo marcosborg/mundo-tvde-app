@@ -16,6 +16,7 @@ import {
   IonItem,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
+import { PushNotificationService } from './services/push-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -43,19 +44,23 @@ export class AppComponent {
   constructor(
     private preferences: PreferencesService,
     private router: Router,
+    private pushNotifications: PushNotificationService,
   ) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.preferences.checkName('access_token').then((resp: any) => {
           this.access_token = resp.value;
+          this.pushNotifications.onAccessTokenAvailable(this.access_token);
         });
       });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.pushNotifications.init();
     this.preferences.checkName('access_token').then((resp: any) => {
       this.access_token = resp.value;
+      this.pushNotifications.onAccessTokenAvailable(this.access_token);
     });
   }
 }

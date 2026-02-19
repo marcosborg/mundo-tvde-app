@@ -1,6 +1,16 @@
 <app-header></app-header>
 
 <ion-content *ngIf="activityLaunches">
+    <ion-card *ngIf="hasDueInspection" color="warning">
+        <ion-card-header>
+            <ion-card-title>Inspeção de viatura pendente</ion-card-title>
+            <ion-card-subtitle>Tem uma inspeção por concluir. Faça já para evitar atraso.</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+            <ion-button expand="block" color="dark" (click)="openInspection()">Abrir inspeção</ion-button>
+        </ion-card-content>
+    </ion-card>
+
     <ion-card>
         <ion-card-content>
             <ion-segment value="graph" [(ngModel)]="segment">

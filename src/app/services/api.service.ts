@@ -7,7 +7,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class ApiService {
 
-  sandbox: boolean = false;
+  sandbox: boolean = true;
   baseUrl: string;
 
   constructor(
@@ -203,6 +203,47 @@ export class ApiService {
 
   carRentalContact(data: any) {
     return this.http.post(this.baseUrl + 'public/car-rental-contact', data, this.httpOptions);
+  }
+
+  private authHeaders(access_token: string) {
+    return {
+      headers: new HttpHeaders({
+        'Accept-Language': 'pt',
+        'Authorization': 'Bearer ' + access_token
+      })
+    };
+  }
+
+  // Inspections
+  driverInspectionNext(access_token: string) {
+    return this.http.get(this.baseUrl + 'driver/inspections/next', this.authHeaders(access_token));
+  }
+
+  driverInspectionStart(access_token: string, assignmentId: number) {
+    return this.http.post(this.baseUrl + 'driver/inspections/' + assignmentId + '/start', {}, this.authHeaders(access_token));
+  }
+
+  driverInspectionPhoto(access_token: string, assignmentId: number, data: FormData) {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.post(this.baseUrl + 'driver/inspections/' + assignmentId + '/photo', data, { headers });
+  }
+
+  driverInspectionDeletePhoto(access_token: string, assignmentId: number, photoId: number) {
+    return this.http.delete(this.baseUrl + 'driver/inspections/' + assignmentId + '/photo/' + photoId, this.authHeaders(access_token));
+  }
+
+  driverInspectionSubmit(access_token: string, assignmentId: number, payload: any) {
+    return this.http.post(this.baseUrl + 'driver/inspections/' + assignmentId + '/submit', payload, this.authHeaders(access_token));
+  }
+
+  registerDeviceToken(access_token: string, payload: { platform: 'android' | 'ios'; token: string; }) {
+    return this.http.post(this.baseUrl + 'device-tokens/register', payload, this.authHeaders(access_token));
+  }
+
+  notifications(access_token: string) {
+    return this.http.get(this.baseUrl + 'notifications', this.authHeaders(access_token));
   }
 
 }

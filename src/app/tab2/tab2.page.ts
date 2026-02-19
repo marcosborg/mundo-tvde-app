@@ -93,6 +93,6 @@ export class Tab2Page {
   }
 
   openPdf(activity_launch_id: any) {
-    window.open('https://mundotvde.pt/api/app/reports/pdf/' + activity_launch_id, '_blank');
+    window.open(this.api.baseUrl + 'app/reports/pdf/' + activity_launch_id, '_blank');
   }
 }
