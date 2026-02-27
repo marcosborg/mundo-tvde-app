@@ -45,8 +45,4 @@ export const routes: Routes = [
     path: 'assistente-motorista',
     loadComponent: () => import('./pages/assistente-motorista/assistente-motorista.page').then(m => m.AssistenteMotoristaPage)
   },
-  {
-    path: 'inspection',
-    loadComponent: () => import('./pages/inspection/inspection.page').then(m => m.InspectionPage)
-  },
 ];

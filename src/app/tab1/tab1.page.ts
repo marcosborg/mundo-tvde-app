@@ -29,7 +29,6 @@ import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { FunctionsService } from '../services/functions.service';
 import { ShiftComponent } from '../components/shift/shift.component';
-import { InspectionService } from '../services/inspection.service';
 
 @Component({
   selector: 'app-tab1',
@@ -69,7 +68,6 @@ export class Tab1Page {
     private router: Router,
     private loadingController: LoadingController,
     private functions: FunctionsService,
-    private inspectionService: InspectionService
   ) { }
 
   ionViewWillEnter() {
@@ -116,8 +114,6 @@ export class Tab1Page {
   value: number = 0;
   total: number = 0;
   isUploading: boolean = false;
-  hasDueInspection: boolean = false;
-  dueInspectionId: number | null = null;
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
@@ -155,21 +151,6 @@ export class Tab1Page {
         console.error('Erro no upload:', error);
       }
     );
-  }
-
-  async ionViewDidEnter() {
-    try {
-      const next: any = await this.inspectionService.nextInspection();
-      this.hasDueInspection = !!next?.assignment?.id;
-      this.dueInspectionId = next?.assignment?.id ?? null;
-    } catch (_) {
-      this.hasDueInspection = false;
-      this.dueInspectionId = null;
-    }
-  }
-
-  openInspection() {
-    this.router.navigateByUrl('/inspection');
   }
 
 }

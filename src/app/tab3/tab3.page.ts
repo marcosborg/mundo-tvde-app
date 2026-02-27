@@ -73,7 +73,6 @@ export class Tab3Page {
     { collection_name: 'profile_picture', name: 'Fotografia de perfil' },
     { collection_name: 'driving_license', name: 'Carta de condução' },
     { collection_name: 'ipo_vehicle', name: 'IPO Viatura' },
-    { collection_name: 'vehicle_inspection', name: 'Inspeção da Viatura' },
     { collection_name: 'dua_vehicle', name: 'DUA Viatura' },
     { collection_name: 'car_insurance', name: 'Seguro Viatura' },
     { collection_name: 'iban', name: 'Comprovativo de IBAN' },
