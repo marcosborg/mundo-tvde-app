@@ -1,0 +1,55 @@
+<app-header></app-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Inspecoes</ion-card-title>
+      <ion-card-subtitle>Inspecoes de rotina e restantes fluxos</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-segment [value]="filter" (ionChange)="segmentChanged($event.detail.value)">
+        <ion-segment-button value="open">
+          <ion-label>Abertas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="all">
+          <ion-label>Todas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="closed">
+          <ion-label>Fechadas</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-grid class="summary-grid">
+        <ion-row>
+          <ion-col size="3"><strong>{{ summary.total }}</strong><br><small>Total</small></ion-col>
+          <ion-col size="3"><strong>{{ summary.open }}</strong><br><small>Abertas</small></ion-col>
+          <ion-col size="3"><strong>{{ summary.ready }}</strong><br><small>Prontas</small></ion-col>
+          <ion-col size="3"><strong>{{ summary.closed }}</strong><br><small>Fechadas</small></ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-buttons style="margin-top: 12px;">
+        <ion-button color="primary" (click)="loadInspections()">Atualizar</ion-button>
+      </ion-buttons>
+
+      <ion-card class="inspection-card" *ngFor="let inspection of inspections" button="true" (click)="openInspection(inspection)">
+        <ion-card-content>
+          <div class="row-top">
+            <strong>#{{ inspection.id }} - {{ inspection.type_label }}</strong>
+            <ion-badge [color]="statusColor(inspection.status)">{{ inspection.status_label }}</ion-badge>
+          </div>
+          <p>Viatura: {{ inspection.vehicle?.license_plate || '-' }}</p>
+          <p>Etapa atual: {{ inspection.current_step }}</p>
+          <ion-button size="small" fill="outline" color="primary">Abrir</ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <p *ngIf="!inspections.length">Sem inspeções disponiveis.</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-chat></app-chat>

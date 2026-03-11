@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { Subscription, filter } from 'rxjs';
 import {
   IonHeader,
   IonToolbar,
@@ -10,16 +11,20 @@ import {
   IonButton,
   IonIcon,
   IonMenuButton,
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { logOutOutline } from 'ionicons/icons';
+import { carSportOutline, logOutOutline } from 'ionicons/icons';
 import { PreferencesService } from 'src/app/services/preferences.service';
+import { ApiService } from 'src/app/services/api.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   imports: [
+    CommonModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -28,21 +33,33 @@ import { PreferencesService } from 'src/app/services/preferences.service';
     IonButton,
     IonIcon,
     IonMenuButton,
+    IonBadge,
   ],
   standalone: true,
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+
+  pendingRoutineCount = 0;
+  private routeSub?: Subscription;
 
   constructor(
     private router: Router,
     private alertController: AlertController,
     private preferences: PreferencesService,
+    private api: ApiService,
   ) {
-    addIcons({ logOutOutline });
+    addIcons({ logOutOutline, carSportOutline });
   }
 
   ngOnInit() { 
+    this.loadPendingCount();
+    this.routeSub = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => this.loadPendingCount());
+  }
 
+  ngOnDestroy(): void {
+    this.routeSub?.unsubscribe();
   }
 
   onLogout() {
@@ -69,6 +86,31 @@ export class HeaderComponent implements OnInit {
       alert.present();
     });
 
+  }
+
+  goToInspections() {
+    this.router.navigate(['/inspections'], { queryParams: { filter: 'all' } });
+  }
+
+  private async loadPendingCount() {
+    const token = await this.preferences.checkName('access_token');
+    const accessToken = token?.value || '';
+    if (!accessToken) {
+      this.pendingRoutineCount = 0;
+      return;
+    }
+
+    this.api.appInspections(accessToken).subscribe({
+      next: (resp: any) => {
+        const rows = Array.isArray(resp?.data) ? resp.data : [];
+        this.pendingRoutineCount = rows.filter((row: any) =>
+          String(row?.type) === 'routine' && String(row?.status) !== 'closed'
+        ).length;
+      },
+      error: () => {
+        this.pendingRoutineCount = 0;
+      }
+    });
   }
 
 }

@@ -11,14 +11,18 @@ export class FunctionsService {
   ) { }
 
   errors(err: any) {
-    let errors = err.error.errors;
+    let errors = err?.error?.errors || null;
     let errorMessages = '';
-    for (const field in errors) {
-      if (errors.hasOwnProperty(field)) {
-        errors[field].forEach((message: string) => {
-          errorMessages += `${message}. `;
-        });
+    if (errors) {
+      for (const field in errors) {
+        if (errors.hasOwnProperty(field)) {
+          errors[field].forEach((message: string) => {
+            errorMessages += `${message}. `;
+          });
+        }
       }
+    } else {
+      errorMessages = err?.error?.message || 'Ocorreu um erro inesperado.';
     }
     this.alertController.create({
       header: 'Erro de validação',

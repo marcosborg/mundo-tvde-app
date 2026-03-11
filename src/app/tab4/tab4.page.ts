@@ -15,6 +15,7 @@ import {
   IonCardContent,
   IonList,
   IonItem,
+  IonButton,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +36,7 @@ import { FormsModule } from '@angular/forms';
     IonCardContent,
     IonList,
     IonItem,
+    IonButton,
     CommonModule,
     FormsModule
   ]
@@ -72,5 +74,9 @@ export class Tab4Page {
 
   getDocument(link: any) {
     window.open(link, '_blank');
+  }
+
+  goToInspections() {
+    this.router.navigateByUrl('/inspections');
   }
 }

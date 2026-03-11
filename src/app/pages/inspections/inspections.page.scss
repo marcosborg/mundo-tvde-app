@@ -1,0 +1,22 @@
+ion-item {
+  --padding-start: 8px;
+}
+
+.summary-grid {
+  margin-top: 12px;
+  background: #f5f7fb;
+  border-radius: 8px;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.inspection-card {
+  margin: 10px 0;
+}
+
+.row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}

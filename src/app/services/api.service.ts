@@ -273,6 +273,54 @@ export class ApiService {
     return this.http.get<any[]>(this.baseUrl + 'motorista-messages', httpOptions);
   }
 
+  appInspections(access_token: string, status?: string) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    const qs = status !== undefined ? `?status=${encodeURIComponent(status)}` : '';
+    return this.http.get<any>(this.baseUrl + 'app/inspections' + qs, { headers });
+  }
+
+  appInspection(access_token: string, inspectionId: number) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.get<any>(`${this.baseUrl}app/inspections/${inspectionId}`, { headers });
+  }
+
+  appInspectionUpdateStep(access_token: string, inspectionId: number, data: FormData) {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.post<any>(`${this.baseUrl}app/inspections/${inspectionId}/step`, data, { headers });
+  }
+
+  appInspectionBackStep(access_token: string, inspectionId: number) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.post<any>(`${this.baseUrl}app/inspections/${inspectionId}/back-step`, {}, { headers });
+  }
+
+  appInspectionResolveDamage(access_token: string, inspectionId: number, damageId: number) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.post<any>(`${this.baseUrl}app/inspections/${inspectionId}/damages/${damageId}/resolve`, {}, { headers });
+  }
+
+  appInspectionClose(access_token: string, inspectionId: number) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.post<any>(`${this.baseUrl}app/inspections/${inspectionId}/close`, {}, { headers });
+  }
+
 
   carRentalContact(data: any) {
     return this.http.post(this.baseUrl + 'public/car-rental-contact', data, this.httpOptions);
