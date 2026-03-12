@@ -103,7 +103,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       next: (resp: any) => {
         const rows = Array.isArray(resp?.data) ? resp.data : [];
         this.pendingRoutineCount = rows.filter((row: any) =>
-          String(row?.type) === 'routine' && String(row?.status) !== 'closed'
+          String(row?.status) !== 'closed'
         ).length;
       },
       error: () => {

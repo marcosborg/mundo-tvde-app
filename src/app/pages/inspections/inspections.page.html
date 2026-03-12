@@ -8,9 +8,65 @@
   <ion-card>
     <ion-card-header>
       <ion-card-title>Inspecoes</ion-card-title>
-      <ion-card-subtitle>Inspecoes de rotina e restantes fluxos</ion-card-subtitle>
+      <ion-card-subtitle>
+        @if (isManager) {
+          Inspecoes de viaturas (modo Admin/Gestor)
+        } @else {
+          Inspecoes de rotina e restantes fluxos
+        }
+      </ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
+      @if (isManager) {
+        <ion-buttons style="margin-bottom: 12px;">
+          <ion-button color="primary" fill="outline" (click)="toggleCreatePanel()">
+            @if (showCreatePanel) { Fechar nova inspecao } @else { Nova inspecao }
+          </ion-button>
+        </ion-buttons>
+        @if (showCreatePanel) {
+          <ion-card class="inspection-card">
+            <ion-card-header>
+              <ion-card-title>Nova inspecao</ion-card-title>
+              <ion-card-subtitle>Criar e abrir no fluxo de edicao</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item>
+                <ion-label>Tipo</ion-label>
+                <ion-select [(ngModel)]="createDraft.type" interface="action-sheet">
+                  @for (type of createOptions.types; track type) {
+                    <ion-select-option [value]="type.key">{{ type.label }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label>Viatura</ion-label>
+                <ion-select [(ngModel)]="createDraft.vehicle_id" (ionChange)="onVehicleChanged(createDraft.vehicle_id)" interface="action-sheet">
+                  @for (vehicle of createOptions.vehicles; track vehicle) {
+                    <ion-select-option [value]="vehicle.id">{{ vehicle.license_plate }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label>Condutor</ion-label>
+                <ion-select [(ngModel)]="createDraft.driver_id" interface="action-sheet">
+                  <ion-select-option [value]="null">Sem condutor</ion-select-option>
+                  @for (driver of createOptions.drivers; track driver) {
+                    <ion-select-option [value]="driver.id">{{ driver.name }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Localizacao (opcional)</ion-label>
+                <ion-input [(ngModel)]="createDraft.location_text"></ion-input>
+              </ion-item>
+              <ion-buttons style="margin-top: 12px;">
+                <ion-button color="primary" (click)="createInspection()">Criar inspecao</ion-button>
+              </ion-buttons>
+            </ion-card-content>
+          </ion-card>
+        }
+      }
+
       <ion-segment [value]="filter" (ionChange)="segmentChanged($event.detail.value)">
         <ion-segment-button value="open">
           <ion-label>Abertas</ion-label>

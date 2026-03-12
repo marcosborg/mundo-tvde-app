@@ -10,16 +10,16 @@
       <ion-card-content>
         <p>Viatura: {{ inspection.vehicle?.license_plate || '-' }}</p>
         <p>Condutor: {{ inspection.driver?.name || '-' }}</p>
-        <ion-chip color="primary">Etapa {{ inspection.current_step }} - {{ stepLabel() }}</ion-chip>
+        <ion-chip color="primary">Etapa {{ displayStepNumber(inspection.current_step) }} - {{ stepLabel() }}</ion-chip>
         <ion-buttons>
           <ion-button color="medium" (click)="backToList()">Voltar</ion-button>
-          <ion-button color="warning" (click)="backStep()" [disabled]="inspection.current_step <= 1">Recuar etapa</ion-button>
+          <ion-button color="warning" (click)="backStep()" [disabled]="!canBackStep()">Recuar etapa</ion-button>
         </ion-buttons>
       </ion-card-content>
     </ion-card>
     @if (isStep(1)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 1 - Identificacao da viatura</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(1) }} - Identificacao da viatura</ion-card-title></ion-card-header>
         <ion-card-content>
           <ion-button color="primary" (click)="saveStep('complete')">Concluir etapa 1</ion-button>
         </ion-card-content>
@@ -27,7 +27,7 @@
     }
     @if (isStep(2)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 2 - Identificacao do condutor</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(2) }} - Identificacao do condutor</ion-card-title></ion-card-header>
         <ion-card-content>
           <ion-item>
             <ion-label>Condutor</ion-label>
@@ -46,7 +46,7 @@
     }
     @if (isStep(3)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 3 - Documentacao</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(3) }} - Documentacao</ion-card-title></ion-card-header>
         <ion-card-content>
           @for (key of documentKeys; track key) {
             <ion-item>
@@ -70,28 +70,38 @@
     }
     @if (isStep(4)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 4 - Estado operacional</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(4) }} - Estado operacional</ion-card-title></ion-card-header>
         <ion-card-content>
-          <ion-item><ion-label>Limpeza exterior: {{ draft.checklist.cleanliness.external }}/10</ion-label></ion-item>
-          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.external"></ion-range>
-          <ion-item><ion-label>Limpeza interior: {{ draft.checklist.cleanliness.interior }}/10</ion-label></ion-item>
-          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.interior"></ion-range>
-          <ion-item><ion-label>Combustivel/Energia: {{ draft.checklist.fuel_energy.level }}/10</ion-label></ion-item>
-          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.fuel_energy.level"></ion-range>
-          <ion-item><ion-label>Estado pneus: {{ draft.checklist.tire_condition.level }}/10</ion-label></ion-item>
-          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.tire_condition.level"></ion-range>
-          <ion-item>
-            <ion-label position="stacked">Quilometragem</ion-label>
-            <ion-input type="number" [(ngModel)]="draft.checklist.mileage.odometer_km"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-checkbox slot="start" [(ngModel)]="draft.checklist.panel_warnings.panel_warning"></ion-checkbox>
-            <ion-label>Avisos no painel</ion-label>
-          </ion-item>
-          <div class="upload-block"><label>Foto combustivel</label><input type="file" multiple (change)="selectFiles($event, 'fuel_energy')"></div>
-          <div class="upload-block"><label>Foto odometro</label><input type="file" multiple (change)="selectFiles($event, 'odometer')"></div>
-          <div class="upload-block"><label>Fotos pneus</label><input type="file" multiple (change)="selectFiles($event, 'tires')"></div>
-          <div class="upload-block"><label>Foto avisos painel</label><input type="file" multiple (change)="selectFiles($event, 'panel_warning')"></div>
+          @if (hasOperationalCheck('cleanliness')) {
+            <ion-item><ion-label>Limpeza exterior: {{ draft.checklist.cleanliness.external }}/10</ion-label></ion-item>
+            <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.external"></ion-range>
+            <ion-item><ion-label>Limpeza interior: {{ draft.checklist.cleanliness.interior }}/10</ion-label></ion-item>
+            <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.interior"></ion-range>
+          }
+          @if (hasOperationalCheck('fuel_energy')) {
+            <ion-item><ion-label>Combustivel/Energia: {{ draft.checklist.fuel_energy.level }}/10</ion-label></ion-item>
+            <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.fuel_energy.level"></ion-range>
+            <div class="upload-block"><label>Foto combustivel</label><input type="file" multiple (change)="selectFiles($event, 'fuel_energy')"></div>
+          }
+          @if (hasOperationalCheck('tire_condition')) {
+            <ion-item><ion-label>Estado pneus: {{ draft.checklist.tire_condition.level }}/10</ion-label></ion-item>
+            <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.tire_condition.level"></ion-range>
+            <div class="upload-block"><label>Fotos pneus</label><input type="file" multiple (change)="selectFiles($event, 'tires')"></div>
+          }
+          @if (hasOperationalCheck('mileage')) {
+            <ion-item>
+              <ion-label position="stacked">Quilometragem</ion-label>
+              <ion-input type="number" [(ngModel)]="draft.checklist.mileage.odometer_km"></ion-input>
+            </ion-item>
+            <div class="upload-block"><label>Foto odometro</label><input type="file" multiple (change)="selectFiles($event, 'odometer')"></div>
+          }
+          @if (hasOperationalCheck('panel_warnings')) {
+            <ion-item>
+              <ion-checkbox slot="start" [(ngModel)]="draft.checklist.panel_warnings.panel_warning"></ion-checkbox>
+              <ion-label>Avisos no painel</ion-label>
+            </ion-item>
+            <div class="upload-block"><label>Foto avisos painel</label><input type="file" multiple (change)="selectFiles($event, 'panel_warning')"></div>
+          }
           <ion-buttons>
             <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
             <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
@@ -101,7 +111,7 @@
     }
     @if (isStep(5)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 5 - Acessorios e extras</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(5) }} - Acessorios e extras</ion-card-title></ion-card-header>
         <ion-card-content>
           @for (key of accessoryKeys; track key) {
             <div class="upload-block">
@@ -139,7 +149,7 @@
     }
     @if (isStep(6)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 6 - Fotografias exteriores</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(6) }} - Fotografias exteriores</ion-card-title></ion-card-header>
         <ion-card-content>
           @for (slot of getSlots('exterior'); track slot) {
             <div class="upload-block">
@@ -157,7 +167,7 @@
     }
     @if (isStep(7)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 7 - Fotografias interiores</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(7) }} - Fotografias interiores</ion-card-title></ion-card-header>
         <ion-card-content>
           @for (slot of getSlots('interior'); track slot) {
             <div class="upload-block">
@@ -175,7 +185,7 @@
     }
     @if (isStep(8) || isStep(9)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa {{ inspection.current_step }} - Danos</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(inspection.current_step) }} - Danos</ion-card-title></ion-card-header>
         <ion-card-content>
           <ion-item>
             <ion-label>Local</ion-label>
@@ -212,7 +222,7 @@
     }
     @if (isStep(10)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 10 - Extras e observacoes</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(10) }} - Extras e observacoes</ion-card-title></ion-card-header>
         <ion-card-content>
           <ion-item>
             <ion-label position="stacked">Observacoes</ion-label>
@@ -228,7 +238,7 @@
     }
     @if (isStep(11)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 11 - Assinaturas</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(11) }} - Assinaturas</ion-card-title></ion-card-header>
         <ion-card-content>
           <ion-item><ion-label position="stacked">Nome responsavel</ion-label><ion-input [(ngModel)]="draft.inspector_name"></ion-input></ion-item>
           <ion-item><ion-label position="stacked">Nome condutor</ion-label><ion-input [(ngModel)]="draft.driver_signature_name"></ion-input></ion-item>
@@ -241,7 +251,7 @@
     }
     @if (isStep(12)) {
       <ion-card>
-        <ion-card-header><ion-card-title>Etapa 12 - Fecho</ion-card-title></ion-card-header>
+        <ion-card-header><ion-card-title>Etapa {{ displayStepNumber(12) }} - Fecho</ion-card-title></ion-card-header>
         <ion-card-content>
           <ion-button color="success" (click)="closeInspection()">Fechar e gerar PDF</ion-button>
           @if (inspection.report_pdf_url) {

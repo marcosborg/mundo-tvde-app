@@ -63,7 +63,7 @@ export class InspectionDetailPage {
   data: any = null;
   inspection: any = null;
 
-  documentKeys = ['dua', 'insurance', 'inspection_periodic', 'tvde_stickers', 'no_smoking_sticker'];
+  defaultDocumentKeys = ['dua', 'insurance', 'inspection_periodic', 'tvde_stickers', 'no_smoking_sticker'];
   documentLabels: any = {
     dua: 'DUA',
     insurance: 'Seguro',
@@ -71,7 +71,7 @@ export class InspectionDetailPage {
     tvde_stickers: 'Disticos TVDE',
     no_smoking_sticker: 'Autocolante proibicao de fumar'
   };
-  accessoryKeys = ['via_verde', 'charging_cable', 'charging_adapter', 'spare_tire', 'anti_puncture_kit', 'jack_wrench', 'warning_triangle', 'reflective_vest'];
+  defaultAccessoryKeys = ['via_verde', 'charging_cable', 'charging_adapter', 'spare_tire', 'anti_puncture_kit', 'jack_wrench', 'warning_triangle', 'reflective_vest'];
   accessoryLabels: any = {
     via_verde: 'Via Verde',
     charging_cable: 'Cabos carregamento',
@@ -102,6 +102,7 @@ export class InspectionDetailPage {
 
   filesMap: { [key: string]: File[] } = {};
   extraFiles: File[] = [];
+  private autoAdvancing = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -138,12 +139,62 @@ export class InspectionDetailPage {
         this.data = resp;
         this.inspection = resp?.inspection;
         this.patchDraftFromChecklist(resp?.checklist || {});
+        this.autoAdvanceRoutineInitialStepsIfNeeded();
         loading.dismiss();
       },
       error: (err) => {
         loading.dismiss();
         this.functions.errors(err);
       }
+    });
+  }
+
+  private autoAdvanceRoutineInitialStepsIfNeeded() {
+    if (this.autoAdvancing) {
+      return;
+    }
+
+    const type = String(this.inspection?.type || '');
+    const currentStep = Number(this.inspection?.current_step || 0);
+
+    if (type !== 'routine' || currentStep >= 3) {
+      return;
+    }
+
+    this.autoAdvancing = true;
+
+    const run = async () => {
+      if (currentStep <= 1) {
+        await this.completeStepSilently(1);
+      }
+
+      if (currentStep <= 2) {
+        await this.completeStepSilently(2, this.inspection?.driver?.id || this.draft.driver_id || null);
+      }
+    };
+
+    run()
+      .then(() => this.loadInspection())
+      .catch(() => null)
+      .finally(() => {
+        this.autoAdvancing = false;
+      });
+  }
+
+  private async completeStepSilently(step: number, driverId?: number | null): Promise<void> {
+    const formData = new FormData();
+    formData.append('step', String(step));
+    formData.append('action', 'complete');
+
+    if (step === 2 && driverId) {
+      formData.append('driver_id', String(driverId));
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      this.api.appInspectionUpdateStep(this.accessToken, this.inspectionId, formData).subscribe({
+        next: () => resolve(),
+        error: (err) => reject(err),
+      });
     });
   }
 
@@ -170,6 +221,41 @@ export class InspectionDetailPage {
 
   isStep(step: number): boolean {
     return Number(this.inspection?.current_step || 0) === step;
+  }
+
+  displayStepNumber(step: number): number {
+    if (this.isRoutineInspection()) {
+      return step >= 3 ? step - 2 : step;
+    }
+
+    return step;
+  }
+
+  canBackStep(): boolean {
+    const currentStep = Number(this.inspection?.current_step || 0);
+    if (this.isRoutineInspection()) {
+      return currentStep > 3;
+    }
+
+    return currentStep > 1;
+  }
+
+  get documentKeys(): string[] {
+    const fromApi = this.data?.document_keys;
+    return Array.isArray(fromApi) && fromApi.length > 0 ? fromApi : this.defaultDocumentKeys;
+  }
+
+  get accessoryKeys(): string[] {
+    const fromApi = this.data?.accessory_keys;
+    return Array.isArray(fromApi) && fromApi.length > 0 ? fromApi : this.defaultAccessoryKeys;
+  }
+
+  hasOperationalCheck(key: string): boolean {
+    const fromApi = this.data?.operational_checks;
+    if (!Array.isArray(fromApi) || fromApi.length === 0) {
+      return true;
+    }
+    return fromApi.includes(key);
   }
 
   getSlots(scope: 'exterior' | 'interior'): string[] {
@@ -217,21 +303,35 @@ export class InspectionDetailPage {
     }
 
     if (step === 4) {
-      formData.append('checklist[cleanliness][external]', String(this.draft.checklist.cleanliness.external ?? 5));
-      formData.append('checklist[cleanliness][interior]', String(this.draft.checklist.cleanliness.interior ?? 5));
-      formData.append('checklist[fuel_energy][level]', String(this.draft.checklist.fuel_energy.level ?? 5));
-      formData.append('checklist[tire_condition][level]', String(this.draft.checklist.tire_condition.level ?? 5));
-      if (this.draft.checklist.mileage.odometer_km !== null && this.draft.checklist.mileage.odometer_km !== '') {
+      if (this.hasOperationalCheck('cleanliness')) {
+        formData.append('checklist[cleanliness][external]', String(this.draft.checklist.cleanliness.external ?? 5));
+        formData.append('checklist[cleanliness][interior]', String(this.draft.checklist.cleanliness.interior ?? 5));
+      }
+      if (this.hasOperationalCheck('fuel_energy')) {
+        formData.append('checklist[fuel_energy][level]', String(this.draft.checklist.fuel_energy.level ?? 5));
+      }
+      if (this.hasOperationalCheck('tire_condition')) {
+        formData.append('checklist[tire_condition][level]', String(this.draft.checklist.tire_condition.level ?? 5));
+      }
+      if (this.hasOperationalCheck('mileage') && this.draft.checklist.mileage.odometer_km !== null && this.draft.checklist.mileage.odometer_km !== '') {
         formData.append('checklist[mileage][odometer_km]', String(this.draft.checklist.mileage.odometer_km));
       }
-      if (this.draft.checklist.panel_warnings?.panel_warning) {
+      if (this.hasOperationalCheck('panel_warnings') && this.draft.checklist.panel_warnings?.panel_warning) {
         formData.append('checklist[panel_warnings][panel_warning]', '1');
       }
 
-      (this.filesMap['fuel_energy'] || []).forEach((file) => formData.append('checklist_photos[fuel_energy][]', file));
-      (this.filesMap['odometer'] || []).forEach((file) => formData.append('checklist_photos[odometer][]', file));
-      (this.filesMap['tires'] || []).forEach((file) => formData.append('checklist_photos[tires][]', file));
-      (this.filesMap['panel_warning'] || []).forEach((file) => formData.append('checklist_photos[panel_warning][]', file));
+      if (this.hasOperationalCheck('fuel_energy')) {
+        (this.filesMap['fuel_energy'] || []).forEach((file) => formData.append('checklist_photos[fuel_energy][]', file));
+      }
+      if (this.hasOperationalCheck('mileage')) {
+        (this.filesMap['odometer'] || []).forEach((file) => formData.append('checklist_photos[odometer][]', file));
+      }
+      if (this.hasOperationalCheck('tire_condition')) {
+        (this.filesMap['tires'] || []).forEach((file) => formData.append('checklist_photos[tires][]', file));
+      }
+      if (this.hasOperationalCheck('panel_warnings')) {
+        (this.filesMap['panel_warning'] || []).forEach((file) => formData.append('checklist_photos[panel_warning][]', file));
+      }
     }
 
     if (step === 5) {
@@ -311,6 +411,10 @@ export class InspectionDetailPage {
   }
 
   backStep() {
+    if (!this.canBackStep()) {
+      return;
+    }
+
     this.api.appInspectionBackStep(this.accessToken, this.inspectionId).subscribe({
       next: () => this.loadInspection(),
       error: (err) => this.functions.errors(err)
@@ -333,5 +437,9 @@ export class InspectionDetailPage {
 
   backToList() {
     this.router.navigateByUrl('/inspections');
+  }
+
+  private isRoutineInspection(): boolean {
+    return String(this.inspection?.type || '') === 'routine';
   }
 }

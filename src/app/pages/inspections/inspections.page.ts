@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
@@ -15,6 +16,10 @@ import {
   IonButtons,
   IonSegment,
   IonSegmentButton,
+  IonItem,
+  IonSelect,
+  IonSelectOption,
+  IonInput,
   IonGrid,
   IonRow,
   IonCol,
@@ -45,11 +50,16 @@ import { FunctionsService } from '../../services/functions.service';
     IonButtons,
     IonSegment,
     IonSegmentButton,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
+    IonInput,
     IonGrid,
     IonRow,
     IonCol,
     IonRefresher,
     IonRefresherContent,
+    FormsModule,
     HeaderComponent,
     ChatComponent
 ]
@@ -59,6 +69,20 @@ export class InspectionsPage {
   inspections: any[] = [];
   filter: string = 'open';
   summary = { total: 0, open: 0, ready: 0, closed: 0 };
+  isManager = false;
+  createOptionsLoaded = false;
+  showCreatePanel = false;
+  createOptions = {
+    types: [] as any[],
+    vehicles: [] as any[],
+    drivers: [] as any[],
+  };
+  createDraft = {
+    type: 'initial',
+    vehicle_id: null as number | null,
+    driver_id: null as number | null,
+    location_text: '',
+  };
 
   constructor(
     private preferences: PreferencesService,
@@ -95,7 +119,11 @@ export class InspectionsPage {
     this.api.appInspections(this.accessToken, status).subscribe({
       next: (resp) => {
         this.inspections = resp?.data || [];
+        this.isManager = !!resp?.meta?.is_manager;
         this.computeSummary(this.inspections);
+        if (this.isManager && !this.createOptionsLoaded) {
+          this.loadCreateOptions();
+        }
         loading.dismiss();
       },
       error: (err) => {
@@ -115,7 +143,11 @@ export class InspectionsPage {
     this.api.appInspections(this.accessToken, status).subscribe({
       next: (resp) => {
         this.inspections = resp?.data || [];
+        this.isManager = !!resp?.meta?.is_manager;
         this.computeSummary(this.inspections);
+        if (this.isManager && !this.createOptionsLoaded) {
+          this.loadCreateOptions();
+        }
         event?.target?.complete?.();
       },
       error: (err) => {
@@ -149,5 +181,68 @@ export class InspectionsPage {
 
   openInspection(inspection: any) {
     this.router.navigateByUrl(`/inspections/${inspection.id}`);
+  }
+
+  loadCreateOptions() {
+    this.api.appInspectionCreateOptions(this.accessToken).subscribe({
+      next: (resp) => {
+        this.createOptions.types = resp?.types || [];
+        this.createOptions.vehicles = resp?.vehicles || [];
+        this.createOptions.drivers = resp?.drivers || [];
+        if (this.createOptions.types.length > 0 && !this.createDraft.type) {
+          this.createDraft.type = this.createOptions.types[0].key;
+        }
+        this.createOptionsLoaded = true;
+      },
+      error: (err) => this.functions.errors(err),
+    });
+  }
+
+  onVehicleChanged(vehicleId: number | null) {
+    const id = Number(vehicleId || 0);
+    if (!id) {
+      return;
+    }
+
+    const vehicle = this.createOptions.vehicles.find((v: any) => Number(v.id) === id);
+    if (vehicle?.driver_id) {
+      this.createDraft.driver_id = Number(vehicle.driver_id);
+    }
+  }
+
+  createInspection() {
+    if (!this.createDraft.type || !this.createDraft.vehicle_id) {
+      this.functions.errors({ error: { message: 'Selecione tipo e viatura.' } });
+      return;
+    }
+
+    const payload: any = {
+      type: this.createDraft.type,
+      vehicle_id: this.createDraft.vehicle_id,
+    };
+
+    if (this.createDraft.driver_id) {
+      payload.driver_id = this.createDraft.driver_id;
+    }
+    if (this.createDraft.location_text?.trim()) {
+      payload.location_text = this.createDraft.location_text.trim();
+    }
+
+    this.api.appInspectionCreate(this.accessToken, payload).subscribe({
+      next: (resp) => {
+        const inspectionId = Number(resp?.inspection_id || 0);
+        if (inspectionId > 0) {
+          this.showCreatePanel = false;
+          this.router.navigateByUrl(`/inspections/${inspectionId}`);
+          return;
+        }
+        this.loadInspections();
+      },
+      error: (err) => this.functions.errors(err),
+    });
+  }
+
+  toggleCreatePanel() {
+    this.showCreatePanel = !this.showCreatePanel;
   }
 }

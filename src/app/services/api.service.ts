@@ -9,7 +9,7 @@ import { Preferences } from '@capacitor/preferences';
 })
 export class ApiService {
 
-  sandbox: boolean = false;
+  sandbox: boolean = true;
   baseUrl: string;
   private readonly productionBaseUrl = 'https://mundotvde.pt/api/';
   private readonly localApiPort = '8000';
@@ -280,6 +280,22 @@ export class ApiService {
     });
     const qs = status !== undefined ? `?status=${encodeURIComponent(status)}` : '';
     return this.http.get<any>(this.baseUrl + 'app/inspections' + qs, { headers });
+  }
+
+  appInspectionCreateOptions(access_token: string) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.get<any>(`${this.baseUrl}app/inspections/create-options`, { headers });
+  }
+
+  appInspectionCreate(access_token: string, data: any) {
+    const headers = new HttpHeaders({
+      'Accept-Language': 'pt',
+      'Authorization': 'Bearer ' + access_token
+    });
+    return this.http.post<any>(`${this.baseUrl}app/inspections`, data, { headers });
   }
 
   appInspection(access_token: string, inspectionId: number) {
