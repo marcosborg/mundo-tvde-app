@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { FunctionsService } from 'src/app/services/functions.service';
 import { PreferencesService } from 'src/app/services/preferences.service';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-shift',
@@ -41,9 +41,8 @@ import { CommonModule } from '@angular/common';
     IonButtons,
     IonGrid,
     IonRow,
-    IonCol,
-    CommonModule
-  ]
+    IonCol
+]
 })
 export class ShiftComponent implements OnInit {
 

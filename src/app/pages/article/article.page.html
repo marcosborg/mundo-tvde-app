@@ -6,9 +6,11 @@
   </ion-button>
 
   <!-- Imagem de destaque -->
-  <div *ngIf="article?.photo?.original_url" class="banner">
-    <ion-img [src]="article.photo.original_url" alt="Imagem do artigo"></ion-img>
-  </div>
+  @if (article?.photo?.original_url) {
+    <div class="banner">
+      <ion-img [src]="article.photo.original_url" alt="Imagem do artigo"></ion-img>
+    </div>
+  }
 
   <!-- Título -->
   <h1 class="ion-padding-top">{{ article?.title }}</h1>

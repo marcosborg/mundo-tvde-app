@@ -18,9 +18,11 @@
     <ion-tab-button tab="tab4" href="/tabs/tab4">
       <ion-icon aria-hidden="true" name="business"></ion-icon>
       <ion-label>Empresa</ion-label>
-      <ion-badge *ngIf="pendingRoutineCount > 0" color="danger" class="tab-badge">
-        {{ pendingRoutineCount }}
-      </ion-badge>
+      @if (pendingRoutineCount > 0) {
+        <ion-badge color="danger" class="tab-badge">
+          {{ pendingRoutineCount }}
+        </ion-badge>
+      }
     </ion-tab-button>
 
     <ion-tab-button tab="tab5" href="/tabs/tab5">

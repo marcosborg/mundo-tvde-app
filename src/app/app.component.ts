@@ -15,7 +15,7 @@ import {
   IonList,
   IonItem,
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+
 import { PushNotificationService } from './services/push-notification.service';
 
 @Component({
@@ -33,9 +33,8 @@ import { PushNotificationService } from './services/push-notification.service';
     IonTitle,
     IonMenuToggle,
     IonList,
-    IonItem,
-    CommonModule
-  ]
+    IonItem
+]
 })
 export class AppComponent {
 

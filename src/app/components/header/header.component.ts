@@ -17,14 +17,13 @@ import { addIcons } from 'ionicons';
 import { carSportOutline, logOutOutline } from 'ionicons/icons';
 import { PreferencesService } from 'src/app/services/preferences.service';
 import { ApiService } from 'src/app/services/api.service';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   imports: [
-    CommonModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -33,8 +32,8 @@ import { CommonModule } from '@angular/common';
     IonButton,
     IonIcon,
     IonMenuButton,
-    IonBadge,
-  ],
+    IonBadge
+],
   standalone: true,
 })
 export class HeaderComponent implements OnInit, OnDestroy {

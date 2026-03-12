@@ -15,10 +15,14 @@
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
-        <ion-item *ngIf="access_token" routerLink="/tabs" routerDirection="root" detail="false">Área do
+        @if (access_token) {
+          <ion-item routerLink="/tabs" routerDirection="root" detail="false">Área do
           motorista</ion-item>
-        <ion-item *ngIf="!access_token" routerLink="/login" routerDirection="root" detail="false">Área do
+        }
+        @if (!access_token) {
+          <ion-item routerLink="/login" routerDirection="root" detail="false">Área do
           motorista</ion-item>
+        }
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
@@ -29,17 +33,21 @@
         <ion-item routerLink="/stand-cars" routerDirection="root" detail="false">Stand</ion-item>
       </ion-menu-toggle>
 
-      <ion-menu-toggle auto-hide="true" *ngIf="!access_token">
-        <ion-item routerLink="/assistente-virtual" routerDirection="root" detail="false">
-          Assistente Virtual
-        </ion-item>
-      </ion-menu-toggle>
+      @if (!access_token) {
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/assistente-virtual" routerDirection="root" detail="false">
+            Assistente Virtual
+          </ion-item>
+        </ion-menu-toggle>
+      }
 
-      <ion-menu-toggle auto-hide="true" *ngIf="access_token">
-        <ion-item routerLink="/assistente-motorista" routerDirection="root" detail="false">
-          Assistente motorista Mundo TVDE
-        </ion-item>
-      </ion-menu-toggle>
+      @if (access_token) {
+        <ion-menu-toggle auto-hide="true">
+          <ion-item routerLink="/assistente-motorista" routerDirection="root" detail="false">
+            Assistente motorista Mundo TVDE
+          </ion-item>
+        </ion-menu-toggle>
+      }
 
     </ion-list>
   </ion-content>

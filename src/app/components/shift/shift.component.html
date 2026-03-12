@@ -14,26 +14,32 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      <ion-button color="success" expand="block" (click)="newTimeLog('start')" *ngIf="status == 'end'">
-        Iniciar turno
-      </ion-button>
-      <ion-grid *ngIf="status == 'start' || status == 'continue'">
-        <ion-row>
-          <ion-col>
-            <ion-button color="medium" expand="block" (click)="newTimeLog('pause')">
-              Pausar turno
-            </ion-button>
-          </ion-col>
-          <ion-col>
-            <ion-button color="primary" expand="block" (click)="newTimeLog('end')">
-              Concluir turno
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-      <ion-button color="secondary" expand="block" *ngIf="status == 'pause'" (click)="newTimeLog('continue')">
-        Retomar turno
-      </ion-button>
+      @if (status == 'end') {
+        <ion-button color="success" expand="block" (click)="newTimeLog('start')">
+          Iniciar turno
+        </ion-button>
+      }
+      @if (status == 'start' || status == 'continue') {
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button color="medium" expand="block" (click)="newTimeLog('pause')">
+                Pausar turno
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button color="primary" expand="block" (click)="newTimeLog('end')">
+                Concluir turno
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      }
+      @if (status == 'pause') {
+        <ion-button color="secondary" expand="block" (click)="newTimeLog('continue')">
+          Retomar turno
+        </ion-button>
+      }
       <ion-button expand="full" color="primary" (click)="openTimeLogs()">
         Consultar turnos
       </ion-button>

@@ -15,16 +15,20 @@
 </ion-header>
 
 <ion-content>
-  <ion-card *ngFor="let timeLog of timeLogs">
-    <ion-card-header>
-      <ion-card-title>Dia: {{ timeLog.date }}</ion-card-title>
-      <ion-card-subtitle>Tempo de condução: {{ timeLog.drivingTime }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-list>
-      <ion-item *ngFor="let timePeriod of timeLog.timePeriods">
-        <ion-label>{{ timePeriod.created_at | date: 'dd/MM/yyyy' }} {{ timePeriod.created_at | date: 'HH:mm' }}</ion-label>
-        <ion-note>{{ changeLabel(timePeriod.status) }}</ion-note>
-      </ion-item>
-    </ion-list>
-  </ion-card>
+  @for (timeLog of timeLogs; track timeLog) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Dia: {{ timeLog.date }}</ion-card-title>
+        <ion-card-subtitle>Tempo de condução: {{ timeLog.drivingTime }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-list>
+        @for (timePeriod of timeLog.timePeriods; track timePeriod) {
+          <ion-item>
+            <ion-label>{{ timePeriod.created_at | date: 'dd/MM/yyyy' }} {{ timePeriod.created_at | date: 'HH:mm' }}</ion-label>
+            <ion-note>{{ changeLabel(timePeriod.status) }}</ion-note>
+          </ion-item>
+        }
+      </ion-list>
+    </ion-card>
+  }
 </ion-content>

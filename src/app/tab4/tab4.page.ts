@@ -17,7 +17,7 @@ import {
   IonItem,
   IonButton,
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -37,9 +37,8 @@ import { FormsModule } from '@angular/forms';
     IonList,
     IonItem,
     IonButton,
-    CommonModule,
     FormsModule
-  ]
+]
 })
 export class Tab4Page {
   constructor(

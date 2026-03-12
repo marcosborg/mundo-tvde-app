@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -25,7 +25,6 @@ import { LoadingController } from '@ionic/angular';
   imports: [
     IonContent,
     IonToolbar,
-    CommonModule,
     FormsModule,
     PublicHeaderComponent,
     IonChip,
@@ -33,8 +32,8 @@ import { LoadingController } from '@ionic/angular';
     IonFooter,
     IonItem,
     IonButton,
-    IonSpinner,
-  ],
+    IonSpinner
+],
 })
 export class AssistenteMotoristaPage {
 

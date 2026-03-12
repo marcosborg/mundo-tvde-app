@@ -17,7 +17,7 @@ import {
   IonList,
   IonItem,
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { PreferencesService } from '../services/preferences.service';
@@ -40,14 +40,13 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
     IonCardTitle,
     IonCardSubtitle,
     IonCardContent,
-    CommonModule,
     FormsModule,
     IonButton,
     IonSelect,
     IonSelectOption,
     IonList,
-    IonItem,
-  ]
+    IonItem
+]
 })
 export class Tab3Page {
 

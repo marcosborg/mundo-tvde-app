@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -31,9 +31,8 @@ import { PreferencesService } from 'src/app/services/preferences.service';
     IonButton,
     IonIcon,
     IonBackButton,
-    IonMenuButton,
-    CommonModule,
-  ],
+    IonMenuButton
+],
   standalone: true,
 })
 export class PublicHeaderComponent implements OnInit {

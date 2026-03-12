@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { PublicHeaderComponent } from '../../components/public-header/public-header.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -24,7 +24,6 @@ import { ApiService } from 'src/app/services/api.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     IonContent,
-    CommonModule,
     FormsModule,
     PublicHeaderComponent,
     IonImg,
@@ -32,8 +31,8 @@ import { ApiService } from 'src/app/services/api.service';
     IonCard,
     IonCardContent,
     IonCardHeader,
-    IonCardTitle,
-  ]
+    IonCardTitle
+]
 })
 export class HomePage implements OnInit {
 

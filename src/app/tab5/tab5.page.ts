@@ -6,7 +6,7 @@ import { PreferencesService } from '../services/preferences.service';
 import { Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
 import { LoadingController } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { 
   IonCard,
@@ -27,7 +27,6 @@ import {
     IonContent,
     HeaderComponent,
     ChatComponent,
-    CommonModule,
     FormsModule,
     IonCard,
     IonCardHeader,
@@ -37,8 +36,8 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonNote,
-  ]
+    IonNote
+]
 })
 export class Tab5Page {
   constructor(

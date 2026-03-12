@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -22,10 +22,9 @@ import { ContactModalComponent } from 'src/app/components/contact-modal/contact-
   standalone: true,
   imports: [
     IonContent,
-    CommonModule,
     FormsModule,
-    PublicHeaderComponent,
-  ],
+    PublicHeaderComponent
+],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CarPage implements OnInit {

@@ -1,5 +1,5 @@
 import { Component, EnvironmentInjector, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge } from '@ionic/angular/standalone';
@@ -12,7 +12,7 @@ import { PreferencesService } from '../services/preferences.service';
     selector: 'app-tabs',
     templateUrl: 'tabs.page.html',
     styleUrls: ['tabs.page.scss'],
-    imports: [CommonModule, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge]
+    imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge]
 })
 export class TabsPage implements OnInit, OnDestroy {
   public environmentInjector = inject(EnvironmentInjector);

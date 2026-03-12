@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import {
@@ -33,7 +33,6 @@ import { FunctionsService } from '../../services/functions.service';
   styleUrls: ['./inspections.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     IonContent,
     IonCard,
     IonCardHeader,
@@ -53,7 +52,7 @@ import { FunctionsService } from '../../services/functions.service';
     IonRefresherContent,
     HeaderComponent,
     ChatComponent
-  ]
+]
 })
 export class InspectionsPage {
   accessToken = '';

@@ -1,227 +1,256 @@
 <app-header></app-header>
 
-<ion-content *ngIf="inspection">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Inspecao #{{ inspection.id }}</ion-card-title>
-      <ion-card-subtitle>{{ inspection.type_label }} | {{ inspection.status_label }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Viatura: {{ inspection.vehicle?.license_plate || '-' }}</p>
-      <p>Condutor: {{ inspection.driver?.name || '-' }}</p>
-      <ion-chip color="primary">Etapa {{ inspection.current_step }} - {{ stepLabel() }}</ion-chip>
-
-      <ion-buttons>
-        <ion-button color="medium" (click)="backToList()">Voltar</ion-button>
-        <ion-button color="warning" (click)="backStep()" [disabled]="inspection.current_step <= 1">Recuar etapa</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(1)">
-    <ion-card-header><ion-card-title>Etapa 1 - Identificacao da viatura</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-button color="primary" (click)="saveStep('complete')">Concluir etapa 1</ion-button>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(2)">
-    <ion-card-header><ion-card-title>Etapa 2 - Identificacao do condutor</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>Condutor</ion-label>
-        <ion-select [(ngModel)]="draft.driver_id">
-          <ion-select-option *ngFor="let d of (data?.driver_options || [])" [value]="d.id">{{ d.name }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(3)">
-    <ion-card-header><ion-card-title>Etapa 3 - Documentacao</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-item *ngFor="let key of documentKeys">
-        <ion-checkbox slot="start" [(ngModel)]="draft.checklist.documents[key]"></ion-checkbox>
-        <ion-label>{{ documentLabels[key] }}</ion-label>
-      </ion-item>
-      <div *ngFor="let key of documentKeys" class="upload-block">
-        <label>{{ documentLabels[key] }} - foto</label>
-        <input type="file" multiple (change)="selectFiles($event, 'doc_' + key)">
-        <small>Novas: {{ getPhotoCount('doc_' + key) }} | Existentes: {{ existingPhotoCount('doc_' + key) }}</small>
-      </div>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(4)">
-    <ion-card-header><ion-card-title>Etapa 4 - Estado operacional</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-item><ion-label>Limpeza exterior: {{ draft.checklist.cleanliness.external }}/10</ion-label></ion-item>
-      <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.external"></ion-range>
-      <ion-item><ion-label>Limpeza interior: {{ draft.checklist.cleanliness.interior }}/10</ion-label></ion-item>
-      <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.interior"></ion-range>
-      <ion-item><ion-label>Combustivel/Energia: {{ draft.checklist.fuel_energy.level }}/10</ion-label></ion-item>
-      <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.fuel_energy.level"></ion-range>
-      <ion-item><ion-label>Estado pneus: {{ draft.checklist.tire_condition.level }}/10</ion-label></ion-item>
-      <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.tire_condition.level"></ion-range>
-      <ion-item>
-        <ion-label position="stacked">Quilometragem</ion-label>
-        <ion-input type="number" [(ngModel)]="draft.checklist.mileage.odometer_km"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-checkbox slot="start" [(ngModel)]="draft.checklist.panel_warnings.panel_warning"></ion-checkbox>
-        <ion-label>Avisos no painel</ion-label>
-      </ion-item>
-      <div class="upload-block"><label>Foto combustivel</label><input type="file" multiple (change)="selectFiles($event, 'fuel_energy')"></div>
-      <div class="upload-block"><label>Foto odometro</label><input type="file" multiple (change)="selectFiles($event, 'odometer')"></div>
-      <div class="upload-block"><label>Fotos pneus</label><input type="file" multiple (change)="selectFiles($event, 'tires')"></div>
-      <div class="upload-block"><label>Foto avisos painel</label><input type="file" multiple (change)="selectFiles($event, 'panel_warning')"></div>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(5)">
-    <ion-card-header><ion-card-title>Etapa 5 - Acessorios e extras</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <div *ngFor="let key of accessoryKeys" class="upload-block">
-        <strong>{{ accessoryLabels[key] }}</strong>
-        <ion-item>
-          <ion-label>Presenca</ion-label>
-          <ion-select [(ngModel)]="draft.checklist.accessories[key + '_present']">
-            <ion-select-option [value]="1">Presente</ion-select-option>
-            <ion-select-option [value]="0">Ausente</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label>Estado</ion-label>
-          <ion-select [(ngModel)]="draft.checklist.accessories[key + '_state']">
-            <ion-select-option value="good">Bom</ion-select-option>
-            <ion-select-option value="fair">Razoavel</ion-select-option>
-            <ion-select-option value="poor">Mau</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <label>Fotos</label>
-        <input type="file" multiple (change)="selectFiles($event, 'acc_' + key)">
-        <small>Novas: {{ getPhotoCount('acc_' + key) }} | Existentes: {{ existingPhotoCount('doc_' + key) }}</small>
-      </div>
-      <ion-item>
-        <ion-label position="stacked">Outros acessorios</ion-label>
-        <ion-textarea [(ngModel)]="draft.checklist.accessories.other_notes"></ion-textarea>
-      </ion-item>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(6)">
-    <ion-card-header><ion-card-title>Etapa 6 - Fotografias exteriores</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <div *ngFor="let slot of getSlots('exterior')" class="upload-block">
-        <label>{{ getSlotLabel('exterior', slot) }}</label>
-        <input type="file" multiple (change)="selectFiles($event, 'ext_' + slot)">
-        <small>Novas: {{ getPhotoCount('ext_' + slot) }} | Existentes: {{ existingPhotoCount(slot) }}</small>
-      </div>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(7)">
-    <ion-card-header><ion-card-title>Etapa 7 - Fotografias interiores</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <div *ngFor="let slot of getSlots('interior')" class="upload-block">
-        <label>{{ getSlotLabel('interior', slot) }}</label>
-        <input type="file" multiple (change)="selectFiles($event, 'int_' + slot)">
-        <small>Novas: {{ getPhotoCount('int_' + slot) }} | Existentes: {{ existingPhotoCount(slot) }}</small>
-      </div>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(8) || isStep(9)">
-    <ion-card-header><ion-card-title>Etapa {{ inspection.current_step }} - Danos</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>Local</ion-label>
-        <ion-select [(ngModel)]="draft.damage.location">
-          <ion-select-option *ngFor="let d of (data?.damage_locations | keyvalue)" [value]="d.key">{{ d.value }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-item><ion-label position="stacked">Peca</ion-label><ion-input [(ngModel)]="draft.damage.part"></ion-input></ion-item>
-      <ion-item><ion-label position="stacked">Parte</ion-label><ion-input [(ngModel)]="draft.damage.part_section"></ion-input></ion-item>
-      <ion-item>
-        <ion-label>Tipo</ion-label>
-        <ion-select [(ngModel)]="draft.damage.damage_type">
-          <ion-select-option *ngFor="let d of (data?.damage_types | keyvalue)" [value]="d.key">{{ d.value }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-item><ion-label position="stacked">Notas</ion-label><ion-textarea [(ngModel)]="draft.damage.damage_notes"></ion-textarea></ion-item>
-      <div class="upload-block"><label>Fotos dano</label><input type="file" multiple (change)="selectFiles($event, 'damage')"></div>
-
-      <div class="upload-block" *ngFor="let damage of data?.damages">
-        <p>#{{ damage.id }} - {{ damage.damage_type }} - {{ damage.is_resolved ? 'Resolvido' : 'Aberto' }}</p>
-        <ion-button size="small" color="success" (click)="resolveDamage(damage.id)" [disabled]="damage.is_resolved">Marcar resolvido</ion-button>
-      </div>
-
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar dano</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(10)">
-    <ion-card-header><ion-card-title>Etapa 10 - Extras e observacoes</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label position="stacked">Observacoes</ion-label>
-        <ion-textarea [(ngModel)]="draft.extra_observations"></ion-textarea>
-      </ion-item>
-      <div class="upload-block"><label>Fotos extra</label><input type="file" multiple (change)="selectExtraFiles($event)"></div>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(11)">
-    <ion-card-header><ion-card-title>Etapa 11 - Assinaturas</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-item><ion-label position="stacked">Nome responsavel</ion-label><ion-input [(ngModel)]="draft.inspector_name"></ion-input></ion-item>
-      <ion-item><ion-label position="stacked">Nome condutor</ion-label><ion-input [(ngModel)]="draft.driver_signature_name"></ion-input></ion-item>
-      <ion-buttons>
-        <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
-        <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
-      </ion-buttons>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="isStep(12)">
-    <ion-card-header><ion-card-title>Etapa 12 - Fecho</ion-card-title></ion-card-header>
-    <ion-card-content>
-      <ion-button color="success" (click)="closeInspection()">Fechar e gerar PDF</ion-button>
-      <p *ngIf="inspection.report_pdf_url"><a [href]="inspection.report_pdf_url" target="_blank">Abrir PDF</a></p>
-    </ion-card-content>
-  </ion-card>
-
-  <div style="height: 30px;"></div>
-</ion-content>
+@if (inspection) {
+  <ion-content>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Inspecao #{{ inspection.id }}</ion-card-title>
+        <ion-card-subtitle>{{ inspection.type_label }} | {{ inspection.status_label }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Viatura: {{ inspection.vehicle?.license_plate || '-' }}</p>
+        <p>Condutor: {{ inspection.driver?.name || '-' }}</p>
+        <ion-chip color="primary">Etapa {{ inspection.current_step }} - {{ stepLabel() }}</ion-chip>
+        <ion-buttons>
+          <ion-button color="medium" (click)="backToList()">Voltar</ion-button>
+          <ion-button color="warning" (click)="backStep()" [disabled]="inspection.current_step <= 1">Recuar etapa</ion-button>
+        </ion-buttons>
+      </ion-card-content>
+    </ion-card>
+    @if (isStep(1)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 1 - Identificacao da viatura</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-button color="primary" (click)="saveStep('complete')">Concluir etapa 1</ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(2)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 2 - Identificacao do condutor</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label>Condutor</ion-label>
+            <ion-select [(ngModel)]="draft.driver_id">
+              @for (d of (data?.driver_options || []); track d) {
+                <ion-select-option [value]="d.id">{{ d.name }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(3)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 3 - Documentacao</ion-card-title></ion-card-header>
+        <ion-card-content>
+          @for (key of documentKeys; track key) {
+            <ion-item>
+              <ion-checkbox slot="start" [(ngModel)]="draft.checklist.documents[key]"></ion-checkbox>
+              <ion-label>{{ documentLabels[key] }}</ion-label>
+            </ion-item>
+          }
+          @for (key of documentKeys; track key) {
+            <div class="upload-block">
+              <label>{{ documentLabels[key] }} - foto</label>
+              <input type="file" multiple (change)="selectFiles($event, 'doc_' + key)">
+              <small>Novas: {{ getPhotoCount('doc_' + key) }} | Existentes: {{ existingPhotoCount('doc_' + key) }}</small>
+            </div>
+          }
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(4)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 4 - Estado operacional</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-item><ion-label>Limpeza exterior: {{ draft.checklist.cleanliness.external }}/10</ion-label></ion-item>
+          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.external"></ion-range>
+          <ion-item><ion-label>Limpeza interior: {{ draft.checklist.cleanliness.interior }}/10</ion-label></ion-item>
+          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.cleanliness.interior"></ion-range>
+          <ion-item><ion-label>Combustivel/Energia: {{ draft.checklist.fuel_energy.level }}/10</ion-label></ion-item>
+          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.fuel_energy.level"></ion-range>
+          <ion-item><ion-label>Estado pneus: {{ draft.checklist.tire_condition.level }}/10</ion-label></ion-item>
+          <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.tire_condition.level"></ion-range>
+          <ion-item>
+            <ion-label position="stacked">Quilometragem</ion-label>
+            <ion-input type="number" [(ngModel)]="draft.checklist.mileage.odometer_km"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-checkbox slot="start" [(ngModel)]="draft.checklist.panel_warnings.panel_warning"></ion-checkbox>
+            <ion-label>Avisos no painel</ion-label>
+          </ion-item>
+          <div class="upload-block"><label>Foto combustivel</label><input type="file" multiple (change)="selectFiles($event, 'fuel_energy')"></div>
+          <div class="upload-block"><label>Foto odometro</label><input type="file" multiple (change)="selectFiles($event, 'odometer')"></div>
+          <div class="upload-block"><label>Fotos pneus</label><input type="file" multiple (change)="selectFiles($event, 'tires')"></div>
+          <div class="upload-block"><label>Foto avisos painel</label><input type="file" multiple (change)="selectFiles($event, 'panel_warning')"></div>
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(5)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 5 - Acessorios e extras</ion-card-title></ion-card-header>
+        <ion-card-content>
+          @for (key of accessoryKeys; track key) {
+            <div class="upload-block">
+              <strong>{{ accessoryLabels[key] }}</strong>
+              <ion-item>
+                <ion-label>Presenca</ion-label>
+                <ion-select [(ngModel)]="draft.checklist.accessories[key + '_present']">
+                  <ion-select-option [value]="1">Presente</ion-select-option>
+                  <ion-select-option [value]="0">Ausente</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-item>
+                <ion-label>Estado</ion-label>
+                <ion-select [(ngModel)]="draft.checklist.accessories[key + '_state']">
+                  <ion-select-option value="good">Bom</ion-select-option>
+                  <ion-select-option value="fair">Razoavel</ion-select-option>
+                  <ion-select-option value="poor">Mau</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <label>Fotos</label>
+              <input type="file" multiple (change)="selectFiles($event, 'acc_' + key)">
+              <small>Novas: {{ getPhotoCount('acc_' + key) }} | Existentes: {{ existingPhotoCount('doc_' + key) }}</small>
+            </div>
+          }
+          <ion-item>
+            <ion-label position="stacked">Outros acessorios</ion-label>
+            <ion-textarea [(ngModel)]="draft.checklist.accessories.other_notes"></ion-textarea>
+          </ion-item>
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(6)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 6 - Fotografias exteriores</ion-card-title></ion-card-header>
+        <ion-card-content>
+          @for (slot of getSlots('exterior'); track slot) {
+            <div class="upload-block">
+              <label>{{ getSlotLabel('exterior', slot) }}</label>
+              <input type="file" multiple (change)="selectFiles($event, 'ext_' + slot)">
+              <small>Novas: {{ getPhotoCount('ext_' + slot) }} | Existentes: {{ existingPhotoCount(slot) }}</small>
+            </div>
+          }
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(7)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 7 - Fotografias interiores</ion-card-title></ion-card-header>
+        <ion-card-content>
+          @for (slot of getSlots('interior'); track slot) {
+            <div class="upload-block">
+              <label>{{ getSlotLabel('interior', slot) }}</label>
+              <input type="file" multiple (change)="selectFiles($event, 'int_' + slot)">
+              <small>Novas: {{ getPhotoCount('int_' + slot) }} | Existentes: {{ existingPhotoCount(slot) }}</small>
+            </div>
+          }
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(8) || isStep(9)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa {{ inspection.current_step }} - Danos</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label>Local</ion-label>
+            <ion-select [(ngModel)]="draft.damage.location">
+              @for (d of (data?.damage_locations | keyvalue); track d) {
+                <ion-select-option [value]="d.key">{{ d.value }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-item><ion-label position="stacked">Peca</ion-label><ion-input [(ngModel)]="draft.damage.part"></ion-input></ion-item>
+          <ion-item><ion-label position="stacked">Parte</ion-label><ion-input [(ngModel)]="draft.damage.part_section"></ion-input></ion-item>
+          <ion-item>
+            <ion-label>Tipo</ion-label>
+            <ion-select [(ngModel)]="draft.damage.damage_type">
+              @for (d of (data?.damage_types | keyvalue); track d) {
+                <ion-select-option [value]="d.key">{{ d.value }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-item><ion-label position="stacked">Notas</ion-label><ion-textarea [(ngModel)]="draft.damage.damage_notes"></ion-textarea></ion-item>
+          <div class="upload-block"><label>Fotos dano</label><input type="file" multiple (change)="selectFiles($event, 'damage')"></div>
+          @for (damage of data?.damages; track damage) {
+            <div class="upload-block">
+              <p>#{{ damage.id }} - {{ damage.damage_type }} - {{ damage.is_resolved ? 'Resolvido' : 'Aberto' }}</p>
+              <ion-button size="small" color="success" (click)="resolveDamage(damage.id)" [disabled]="damage.is_resolved">Marcar resolvido</ion-button>
+            </div>
+          }
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar dano</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(10)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 10 - Extras e observacoes</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="stacked">Observacoes</ion-label>
+            <ion-textarea [(ngModel)]="draft.extra_observations"></ion-textarea>
+          </ion-item>
+          <div class="upload-block"><label>Fotos extra</label><input type="file" multiple (change)="selectExtraFiles($event)"></div>
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(11)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 11 - Assinaturas</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-item><ion-label position="stacked">Nome responsavel</ion-label><ion-input [(ngModel)]="draft.inspector_name"></ion-input></ion-item>
+          <ion-item><ion-label position="stacked">Nome condutor</ion-label><ion-input [(ngModel)]="draft.driver_signature_name"></ion-input></ion-item>
+          <ion-buttons>
+            <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+          </ion-buttons>
+        </ion-card-content>
+      </ion-card>
+    }
+    @if (isStep(12)) {
+      <ion-card>
+        <ion-card-header><ion-card-title>Etapa 12 - Fecho</ion-card-title></ion-card-header>
+        <ion-card-content>
+          <ion-button color="success" (click)="closeInspection()">Fechar e gerar PDF</ion-button>
+          @if (inspection.report_pdf_url) {
+            <p><a [href]="inspection.report_pdf_url" target="_blank">Abrir PDF</a></p>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+    <div style="height: 30px;"></div>
+  </ion-content>
+}
 <app-chat></app-chat>

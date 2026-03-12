@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -17,7 +17,6 @@ import { ApiService } from 'src/app/services/api.service';
   selector: 'app-contact-modal',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonContent,
     IonInput,
@@ -26,7 +25,7 @@ import { ApiService } from 'src/app/services/api.service';
     IonLabel,
     IonItem,
     IonTextarea
-  ],
+],
   templateUrl: './contact-modal.component.html',
   styleUrls: ['./contact-modal.component.scss'],
 })

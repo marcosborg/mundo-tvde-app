@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ApiService } from 'src/app/services/api.service';
 import { PublicHeaderComponent } from 'src/app/components/public-header/public-header.component';
@@ -8,7 +8,7 @@ import { PublicHeaderComponent } from 'src/app/components/public-header/public-h
 @Component({
   selector: 'app-assistente-virtual',
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, PublicHeaderComponent],
+  imports: [IonicModule, FormsModule, PublicHeaderComponent],
   providers: [ApiService],
   templateUrl: './assistente-virtual.page.html',
   styleUrls: ['./assistente-virtual.page.scss'],
