@@ -71,11 +71,11 @@
     "typescript": "~5.9.3"
   },
   "browserslist": [
-    "Chrome >=107",
+    "Chrome >=111",
     "ChromeAndroid >=60",
-    "Firefox >=106",
-    "Edge >=107",
-    "Safari >=16.1",
-    "iOS >=16.1"
+    "Firefox >=112",
+    "Edge >=111",
+    "Safari >=16.4",
+    "iOS >=16.4"
   ]
 }
