@@ -5,6 +5,7 @@ import {
   PushNotificationSchema,
   ActionPerformed,
   Token,
+  Channel,
 } from '@capacitor/push-notifications';
 import { ToastController } from '@ionic/angular';
 
@@ -13,6 +14,7 @@ import { ToastController } from '@ionic/angular';
 })
 export class PushNotificationService {
   private initialized = false;
+  private readonly defaultChannelId = 'mundotvde_default_channel';
 
   constructor(
     private toastController: ToastController,
@@ -52,6 +54,18 @@ export class PushNotificationService {
       if (requestStatus.receive !== 'granted') {
         return;
       }
+    }
+
+    if (Capacitor.getPlatform() === 'android') {
+      const channel: Channel = {
+        id: this.defaultChannelId,
+        name: 'Notificacoes',
+        description: 'Canal padrao de notificacoes',
+        importance: 4,
+        visibility: 1,
+      };
+
+      await PushNotifications.createChannel(channel);
     }
 
     await PushNotifications.register();
