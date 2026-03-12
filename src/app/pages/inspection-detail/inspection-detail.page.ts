@@ -27,6 +27,7 @@ import { ChatComponent } from '../../components/chat/chat.component';
 import { PreferencesService } from '../../services/preferences.service';
 import { ApiService } from '../../services/api.service';
 import { FunctionsService } from '../../services/functions.service';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-inspection-detail',
@@ -102,6 +103,8 @@ export class InspectionDetailPage {
 
   filesMap: { [key: string]: File[] } = {};
   extraFiles: File[] = [];
+  signatureDataUrls: { responsible: string; driver: string } = { responsible: '', driver: '' };
+  private signatureDrawing: { responsible: boolean; driver: boolean } = { responsible: false, driver: false };
   private autoAdvancing = false;
 
   constructor(
@@ -138,6 +141,8 @@ export class InspectionDetailPage {
       next: (resp) => {
         this.data = resp;
         this.inspection = resp?.inspection;
+        this.signatureDataUrls = { responsible: '', driver: '' };
+        this.signatureDrawing = { responsible: false, driver: false };
         this.patchDraftFromChecklist(resp?.checklist || {});
         this.autoAdvanceRoutineInitialStepsIfNeeded();
         loading.dismiss();
@@ -210,13 +215,44 @@ export class InspectionDetailPage {
     this.draft.extra_observations = this.inspection?.extra_observations || '';
   }
 
-  selectFiles(event: any, key: string) {
+  async selectFiles(event: any, key: string) {
     const selected = Array.from((event?.target?.files || []) as File[]);
-    this.filesMap[key] = selected;
+    const optimized = await Promise.all(selected.map((file) => this.optimizeExistingFile(file, key)));
+    this.filesMap[key] = optimized.filter((file): file is File => !!file);
   }
 
-  selectExtraFiles(event: any) {
-    this.extraFiles = Array.from((event?.target?.files || []) as File[]);
+  async selectExtraFiles(event: any) {
+    const selected = Array.from((event?.target?.files || []) as File[]);
+    const optimized = await Promise.all(selected.map((file) => this.optimizeExistingFile(file, 'extra')));
+    this.extraFiles = optimized.filter((file): file is File => !!file);
+  }
+
+  async capturePhoto(key: string) {
+    const file = await this.captureAndProcessPhoto(CameraSource.Camera, key);
+    if (file) {
+      this.filesMap[key] = [...(this.filesMap[key] || []), file];
+    }
+  }
+
+  async pickPhotoFromGallery(key: string) {
+    const file = await this.captureAndProcessPhoto(CameraSource.Photos, key);
+    if (file) {
+      this.filesMap[key] = [...(this.filesMap[key] || []), file];
+    }
+  }
+
+  async captureExtraPhoto() {
+    const file = await this.captureAndProcessPhoto(CameraSource.Camera, 'extra');
+    if (file) {
+      this.extraFiles = [...this.extraFiles, file];
+    }
+  }
+
+  async pickExtraPhotoFromGallery() {
+    const file = await this.captureAndProcessPhoto(CameraSource.Photos, 'extra');
+    if (file) {
+      this.extraFiles = [...this.extraFiles, file];
+    }
   }
 
   isStep(step: number): boolean {
@@ -276,9 +312,18 @@ export class InspectionDetailPage {
     return this.filesMap[key]?.length || 0;
   }
 
+  getExtraPhotoCount(): number {
+    return this.extraFiles.length;
+  }
+
   existingPhotoCount(slot: string): number {
     const list = this.data?.photos || [];
     return list.filter((p: any) => p?.slot === slot).length;
+  }
+
+  existingExtraPhotoCount(): number {
+    const list = this.data?.photos || [];
+    return list.filter((p: any) => String(p?.category || '') === 'extra').length;
   }
 
   saveStep(action: 'save' | 'complete') {
@@ -402,6 +447,12 @@ export class InspectionDetailPage {
       if (this.draft.driver_signature_name) {
         formData.append('driver_signature_name', this.draft.driver_signature_name);
       }
+      if (this.signatureDataUrls.responsible) {
+        formData.append('inspector_signature_data', this.signatureDataUrls.responsible);
+      }
+      if (this.signatureDataUrls.driver) {
+        formData.append('driver_signature_data', this.signatureDataUrls.driver);
+      }
     }
 
     this.api.appInspectionUpdateStep(this.accessToken, this.inspectionId, formData).subscribe({
@@ -441,5 +492,168 @@ export class InspectionDetailPage {
 
   private isRoutineInspection(): boolean {
     return String(this.inspection?.type || '') === 'routine';
+  }
+
+  beginSignature(role: 'responsible' | 'driver', event: any, canvas: HTMLCanvasElement) {
+    event.preventDefault();
+    const ctx = this.signatureContext(canvas);
+    if (!ctx) {
+      return;
+    }
+
+    const point = this.signaturePoint(canvas, event);
+    ctx.beginPath();
+    ctx.moveTo(point.x, point.y);
+    this.signatureDrawing[role] = true;
+  }
+
+  drawSignature(role: 'responsible' | 'driver', event: any, canvas: HTMLCanvasElement) {
+    if (!this.signatureDrawing[role]) {
+      return;
+    }
+    event.preventDefault();
+    const ctx = this.signatureContext(canvas);
+    if (!ctx) {
+      return;
+    }
+
+    const point = this.signaturePoint(canvas, event);
+    ctx.lineTo(point.x, point.y);
+    ctx.stroke();
+  }
+
+  endSignature(role: 'responsible' | 'driver', canvas: HTMLCanvasElement) {
+    if (!this.signatureDrawing[role]) {
+      return;
+    }
+    this.signatureDrawing[role] = false;
+    this.signatureDataUrls[role] = canvas.toDataURL('image/png');
+  }
+
+  clearSignature(role: 'responsible' | 'driver', canvas: HTMLCanvasElement) {
+    const ctx = this.signatureContext(canvas);
+    if (!ctx) {
+      return;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.signatureDataUrls[role] = '';
+    this.signatureDrawing[role] = false;
+  }
+
+  hasSignature(role: 'responsible' | 'driver'): boolean {
+    return !!this.signatureDataUrls[role];
+  }
+
+  private async captureAndProcessPhoto(source: CameraSource, key: string): Promise<File | null> {
+    try {
+      const photo = await Camera.getPhoto({
+        source,
+        resultType: CameraResultType.DataUrl,
+        quality: 72,
+        allowEditing: false,
+      });
+
+      if (!photo?.dataUrl) {
+        return null;
+      }
+
+      return await this.dataUrlToOptimizedFile(photo.dataUrl, key);
+    } catch (err: any) {
+      const message = String(err?.message || '').toLowerCase();
+      if (message.includes('cancel')) {
+        return null;
+      }
+      this.functions.errors(err);
+      return null;
+    }
+  }
+
+  private async optimizeExistingFile(file: File, key: string): Promise<File | null> {
+    if (!file.type.startsWith('image/')) {
+      return file;
+    }
+
+    const dataUrl = await this.fileToDataUrl(file);
+    return this.dataUrlToOptimizedFile(dataUrl, key);
+  }
+
+  private fileToDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(new Error('Nao foi possivel ler o ficheiro.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  private async dataUrlToOptimizedFile(dataUrl: string, key: string): Promise<File> {
+    const blob = await fetch(dataUrl).then((r) => r.blob());
+    const optimizedBlob = await this.optimizeImageBlob(blob);
+    const filename = `${key}-${Date.now()}.jpg`;
+    return new File([optimizedBlob], filename, { type: 'image/jpeg' });
+  }
+
+  private optimizeImageBlob(blob: Blob): Promise<Blob> {
+    return new Promise((resolve) => {
+      const maxDimension = 1600;
+      const quality = 0.78;
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+
+      img.onload = () => {
+        const width = img.width || maxDimension;
+        const height = img.height || maxDimension;
+        const scale = Math.min(1, maxDimension / Math.max(width, height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(width * scale);
+        canvas.height = Math.round(height * scale);
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          URL.revokeObjectURL(url);
+          resolve(blob);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          (compressed) => {
+            URL.revokeObjectURL(url);
+            resolve(compressed || blob);
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(blob);
+      };
+
+      img.src = url;
+    });
+  }
+
+  private signatureContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D | null {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return null;
+    }
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#111';
+    return ctx;
+  }
+
+  private signaturePoint(canvas: HTMLCanvasElement, event: any): { x: number; y: number } {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (event.clientX - rect.left) * scaleX,
+      y: (event.clientY - rect.top) * scaleY,
+    };
   }
 }

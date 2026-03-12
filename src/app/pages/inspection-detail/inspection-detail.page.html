@@ -57,7 +57,10 @@
           @for (key of documentKeys; track key) {
             <div class="upload-block">
               <label>{{ documentLabels[key] }} - foto</label>
-              <input type="file" multiple (change)="selectFiles($event, 'doc_' + key)">
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('doc_' + key)">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('doc_' + key)">Galeria</ion-button>
+              </ion-buttons>
               <small>Novas: {{ getPhotoCount('doc_' + key) }} | Existentes: {{ existingPhotoCount('doc_' + key) }}</small>
             </div>
           }
@@ -81,26 +84,54 @@
           @if (hasOperationalCheck('fuel_energy')) {
             <ion-item><ion-label>Combustivel/Energia: {{ draft.checklist.fuel_energy.level }}/10</ion-label></ion-item>
             <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.fuel_energy.level"></ion-range>
-            <div class="upload-block"><label>Foto combustivel</label><input type="file" multiple (change)="selectFiles($event, 'fuel_energy')"></div>
+            <div class="upload-block">
+              <label>Foto combustivel</label>
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('fuel_energy')">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('fuel_energy')">Galeria</ion-button>
+              </ion-buttons>
+              <small>Novas: {{ getPhotoCount('fuel_energy') }} | Existentes: {{ existingPhotoCount('fuel_energy') }}</small>
+            </div>
           }
           @if (hasOperationalCheck('tire_condition')) {
             <ion-item><ion-label>Estado pneus: {{ draft.checklist.tire_condition.level }}/10</ion-label></ion-item>
             <ion-range min="0" max="10" step="1" [(ngModel)]="draft.checklist.tire_condition.level"></ion-range>
-            <div class="upload-block"><label>Fotos pneus</label><input type="file" multiple (change)="selectFiles($event, 'tires')"></div>
+            <div class="upload-block">
+              <label>Fotos pneus</label>
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('tires')">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('tires')">Galeria</ion-button>
+              </ion-buttons>
+              <small>Novas: {{ getPhotoCount('tires') }} | Existentes: {{ existingPhotoCount('tires') }}</small>
+            </div>
           }
           @if (hasOperationalCheck('mileage')) {
             <ion-item>
               <ion-label position="stacked">Quilometragem</ion-label>
               <ion-input type="number" [(ngModel)]="draft.checklist.mileage.odometer_km"></ion-input>
             </ion-item>
-            <div class="upload-block"><label>Foto odometro</label><input type="file" multiple (change)="selectFiles($event, 'odometer')"></div>
+            <div class="upload-block">
+              <label>Foto odometro</label>
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('odometer')">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('odometer')">Galeria</ion-button>
+              </ion-buttons>
+              <small>Novas: {{ getPhotoCount('odometer') }} | Existentes: {{ existingPhotoCount('odometer') }}</small>
+            </div>
           }
           @if (hasOperationalCheck('panel_warnings')) {
             <ion-item>
               <ion-checkbox slot="start" [(ngModel)]="draft.checklist.panel_warnings.panel_warning"></ion-checkbox>
               <ion-label>Avisos no painel</ion-label>
             </ion-item>
-            <div class="upload-block"><label>Foto avisos painel</label><input type="file" multiple (change)="selectFiles($event, 'panel_warning')"></div>
+            <div class="upload-block">
+              <label>Foto avisos painel</label>
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('panel_warning')">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('panel_warning')">Galeria</ion-button>
+              </ion-buttons>
+              <small>Novas: {{ getPhotoCount('panel_warning') }} | Existentes: {{ existingPhotoCount('panel_warning') }}</small>
+            </div>
           }
           <ion-buttons>
             <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
@@ -132,7 +163,10 @@
                 </ion-select>
               </ion-item>
               <label>Fotos</label>
-              <input type="file" multiple (change)="selectFiles($event, 'acc_' + key)">
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('acc_' + key)">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('acc_' + key)">Galeria</ion-button>
+              </ion-buttons>
               <small>Novas: {{ getPhotoCount('acc_' + key) }} | Existentes: {{ existingPhotoCount('doc_' + key) }}</small>
             </div>
           }
@@ -154,7 +188,10 @@
           @for (slot of getSlots('exterior'); track slot) {
             <div class="upload-block">
               <label>{{ getSlotLabel('exterior', slot) }}</label>
-              <input type="file" multiple (change)="selectFiles($event, 'ext_' + slot)">
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('ext_' + slot)">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('ext_' + slot)">Galeria</ion-button>
+              </ion-buttons>
               <small>Novas: {{ getPhotoCount('ext_' + slot) }} | Existentes: {{ existingPhotoCount(slot) }}</small>
             </div>
           }
@@ -172,7 +209,10 @@
           @for (slot of getSlots('interior'); track slot) {
             <div class="upload-block">
               <label>{{ getSlotLabel('interior', slot) }}</label>
-              <input type="file" multiple (change)="selectFiles($event, 'int_' + slot)">
+              <ion-buttons>
+                <ion-button size="small" color="primary" (click)="capturePhoto('int_' + slot)">Camara</ion-button>
+                <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('int_' + slot)">Galeria</ion-button>
+              </ion-buttons>
               <small>Novas: {{ getPhotoCount('int_' + slot) }} | Existentes: {{ existingPhotoCount(slot) }}</small>
             </div>
           }
@@ -206,7 +246,14 @@
             </ion-select>
           </ion-item>
           <ion-item><ion-label position="stacked">Notas</ion-label><ion-textarea [(ngModel)]="draft.damage.damage_notes"></ion-textarea></ion-item>
-          <div class="upload-block"><label>Fotos dano</label><input type="file" multiple (change)="selectFiles($event, 'damage')"></div>
+          <div class="upload-block">
+            <label>Fotos dano</label>
+            <ion-buttons>
+              <ion-button size="small" color="primary" (click)="capturePhoto('damage')">Camara</ion-button>
+              <ion-button size="small" color="medium" fill="outline" (click)="pickPhotoFromGallery('damage')">Galeria</ion-button>
+            </ion-buttons>
+            <small>Novas: {{ getPhotoCount('damage') }} | Existentes: {{ existingPhotoCount('damage') }}</small>
+          </div>
           @for (damage of data?.damages; track damage) {
             <div class="upload-block">
               <p>#{{ damage.id }} - {{ damage.damage_type }} - {{ damage.is_resolved ? 'Resolvido' : 'Aberto' }}</p>
@@ -228,7 +275,14 @@
             <ion-label position="stacked">Observacoes</ion-label>
             <ion-textarea [(ngModel)]="draft.extra_observations"></ion-textarea>
           </ion-item>
-          <div class="upload-block"><label>Fotos extra</label><input type="file" multiple (change)="selectExtraFiles($event)"></div>
+          <div class="upload-block">
+            <label>Fotos extra</label>
+            <ion-buttons>
+              <ion-button size="small" color="primary" (click)="captureExtraPhoto()">Camara</ion-button>
+              <ion-button size="small" color="medium" fill="outline" (click)="pickExtraPhotoFromGallery()">Galeria</ion-button>
+            </ion-buttons>
+            <small>Novas: {{ getExtraPhotoCount() }} | Existentes: {{ existingExtraPhotoCount() }}</small>
+          </div>
           <ion-buttons>
             <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
             <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
@@ -242,6 +296,42 @@
         <ion-card-content>
           <ion-item><ion-label position="stacked">Nome responsavel</ion-label><ion-input [(ngModel)]="draft.inspector_name"></ion-input></ion-item>
           <ion-item><ion-label position="stacked">Nome condutor</ion-label><ion-input [(ngModel)]="draft.driver_signature_name"></ion-input></ion-item>
+          <div class="signature-block">
+            <label>Assinatura do responsavel (dedo/caneta)</label>
+            <canvas
+              #responsibleCanvas
+              class="signature-canvas"
+              width="600"
+              height="220"
+              (pointerdown)="beginSignature('responsible', $event, responsibleCanvas)"
+              (pointermove)="drawSignature('responsible', $event, responsibleCanvas)"
+              (pointerup)="endSignature('responsible', responsibleCanvas)"
+              (pointerleave)="endSignature('responsible', responsibleCanvas)"
+              (pointercancel)="endSignature('responsible', responsibleCanvas)"
+            ></canvas>
+            <ion-buttons>
+              <ion-button size="small" color="medium" fill="outline" (click)="clearSignature('responsible', responsibleCanvas)">Limpar</ion-button>
+            </ion-buttons>
+            <small>Assinatura: {{ hasSignature('responsible') ? 'capturada' : 'por capturar' }}</small>
+          </div>
+          <div class="signature-block">
+            <label>Assinatura do condutor (dedo/caneta)</label>
+            <canvas
+              #driverCanvas
+              class="signature-canvas"
+              width="600"
+              height="220"
+              (pointerdown)="beginSignature('driver', $event, driverCanvas)"
+              (pointermove)="drawSignature('driver', $event, driverCanvas)"
+              (pointerup)="endSignature('driver', driverCanvas)"
+              (pointerleave)="endSignature('driver', driverCanvas)"
+              (pointercancel)="endSignature('driver', driverCanvas)"
+            ></canvas>
+            <ion-buttons>
+              <ion-button size="small" color="medium" fill="outline" (click)="clearSignature('driver', driverCanvas)">Limpar</ion-button>
+            </ion-buttons>
+            <small>Assinatura: {{ hasSignature('driver') ? 'capturada' : 'por capturar' }}</small>
+          </div>
           <ion-buttons>
             <ion-button color="medium" (click)="saveStep('save')">Guardar</ion-button>
             <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>

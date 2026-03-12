@@ -9,7 +9,7 @@ import { Preferences } from '@capacitor/preferences';
 })
 export class ApiService {
 
-  sandbox: boolean = false;
+  sandbox: boolean = true;
   baseUrl: string;
   private readonly productionBaseUrl = 'https://mundotvde.pt/api/';
   private readonly localApiPort = '8000';
