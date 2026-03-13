@@ -229,14 +229,21 @@
         <ion-card-content>
           <ion-item>
             <ion-label>Local</ion-label>
-            <ion-select [(ngModel)]="draft.damage.location">
+            <ion-select [(ngModel)]="draft.damage.location" (ionChange)="onDamageLocationChanged($event.detail.value)">
               @for (d of (data?.damage_locations | keyvalue); track d) {
                 <ion-select-option [value]="d.key">{{ d.value }}</ion-select-option>
               }
             </ion-select>
           </ion-item>
-          <ion-item><ion-label position="stacked">Peca</ion-label><ion-input [(ngModel)]="draft.damage.part"></ion-input></ion-item>
-          <ion-item><ion-label position="stacked">Parte</ion-label><ion-input [(ngModel)]="draft.damage.part_section"></ion-input></ion-item>
+          <ion-item>
+            <ion-label>Peca</ion-label>
+            <ion-select [(ngModel)]="draft.damage.part">
+              @for (part of damagePartOptions; track part.key) {
+                <ion-select-option [value]="part.key">{{ part.label }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-item><ion-label position="stacked">Parte (opcional)</ion-label><ion-input [(ngModel)]="draft.damage.part_section"></ion-input></ion-item>
           <ion-item>
             <ion-label>Tipo</ion-label>
             <ion-select [(ngModel)]="draft.damage.damage_type">
@@ -256,8 +263,10 @@
           </div>
           @for (damage of data?.damages; track damage) {
             <div class="upload-block">
-              <p>#{{ damage.id }} - {{ damage.damage_type }} - {{ damage.is_resolved ? 'Resolvido' : 'Aberto' }}</p>
-              <ion-button size="small" color="success" (click)="resolveDamage(damage.id)" [disabled]="damage.is_resolved">Marcar resolvido</ion-button>
+              <p>#{{ damage.id }} - {{ damagePieceLabel(damage.location, damage.part) }}{{ damage.part_section ? ' / ' + damage.part_section : '' }} - {{ damage.is_resolved ? 'Resolvido' : 'Aberto' }}</p>
+              @if (isManager) {
+                <ion-button size="small" color="success" (click)="resolveDamage(damage.id)" [disabled]="damage.is_resolved">Marcar resolvido</ion-button>
+              }
             </div>
           }
           <ion-buttons>

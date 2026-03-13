@@ -2,6 +2,11 @@ ion-item {
   --padding-start: 8px;
 }
 
+ion-item ion-input {
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
 .summary-grid {
   margin-top: 12px;
   background: #f5f7fb;

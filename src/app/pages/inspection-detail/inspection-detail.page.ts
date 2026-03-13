@@ -59,10 +59,20 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
   ]
 })
 export class InspectionDetailPage {
+  private readonly preferredInteriorSlotOrder = [
+    'dashboard',
+    'odometer',
+    'center_console',
+    'front_seats',
+    'rear_seats',
+    'trunk',
+  ];
+
   accessToken = '';
   inspectionId = 0;
   data: any = null;
   inspection: any = null;
+  isManager = false;
 
   defaultDocumentKeys = ['dua', 'insurance', 'inspection_periodic', 'tvde_stickers', 'no_smoking_sticker'];
   documentLabels: any = {
@@ -141,6 +151,7 @@ export class InspectionDetailPage {
       next: (resp) => {
         this.data = resp;
         this.inspection = resp?.inspection;
+        this.isManager = !!resp?.meta?.is_manager;
         this.signatureDataUrls = { responsible: '', driver: '' };
         this.signatureDrawing = { responsible: false, driver: false };
         this.patchDraftFromChecklist(resp?.checklist || {});
@@ -295,7 +306,20 @@ export class InspectionDetailPage {
   }
 
   getSlots(scope: 'exterior' | 'interior'): string[] {
-    return (this.data?.required_slots?.[scope] || []) as string[];
+    const slots = [...((this.data?.required_slots?.[scope] || []) as string[])];
+    if (scope !== 'interior') {
+      return slots;
+    }
+
+    const order = new Map(this.preferredInteriorSlotOrder.map((slot, index) => [slot, index]));
+    return slots.sort((left, right) => {
+      const leftOrder = order.has(left) ? (order.get(left) as number) : Number.MAX_SAFE_INTEGER;
+      const rightOrder = order.has(right) ? (order.get(right) as number) : Number.MAX_SAFE_INTEGER;
+      if (leftOrder === rightOrder) {
+        return left.localeCompare(right);
+      }
+      return leftOrder - rightOrder;
+    });
   }
 
   getSlotLabel(scope: 'exterior' | 'interior', slot: string): string {
@@ -305,6 +329,34 @@ export class InspectionDetailPage {
   stepLabel(): string {
     const step = Number(this.inspection?.current_step || 0);
     return this.data?.steps?.[step] || '';
+  }
+
+  get damagePartOptions(): Array<{ key: string; label: string }> {
+    const selectedLocation = String(this.draft?.damage?.location || '');
+    if (!selectedLocation) {
+      return [];
+    }
+
+    const parts = this.data?.damage_parts?.[selectedLocation]?.sections || {};
+    return Object.entries(parts).map(([key, value]: [string, any]) => ({
+      key,
+      label: String(value || key),
+    }));
+  }
+
+  onDamageLocationChanged(value: string | number | undefined) {
+    const nextLocation = String(value || '');
+    this.draft.damage.location = nextLocation;
+
+    const pieceExists = this.damagePartOptions.some((item) => item.key === this.draft.damage.part);
+    if (!pieceExists) {
+      this.draft.damage.part = '';
+    }
+  }
+
+  damagePieceLabel(locationKey: string, pieceKey: string): string {
+    const pieces = this.data?.damage_parts?.[locationKey]?.sections || {};
+    return String(pieces?.[pieceKey] || pieceKey);
   }
 
   getPhotoCount(slotPrefix: string): number {

@@ -68,6 +68,8 @@ export class InspectionsPage {
   accessToken = '';
   inspections: any[] = [];
   filter: string = 'open';
+  vehicleSearch = '';
+  driverSearch = '';
   summary = { total: 0, open: 0, ready: 0, closed: 0 };
   isManager = false;
   createOptionsLoaded = false;
@@ -208,6 +210,80 @@ export class InspectionsPage {
     if (vehicle?.driver_id) {
       this.createDraft.driver_id = Number(vehicle.driver_id);
     }
+    this.vehicleSearch = this.vehicleOptionLabel(vehicle);
+  }
+
+  onDriverChanged(driverId: number | null) {
+    if (!driverId) {
+      this.driverSearch = '';
+      return;
+    }
+
+    const driver = this.createOptions.drivers.find((item: any) => Number(item.id) === Number(driverId));
+    this.driverSearch = this.driverOptionLabel(driver);
+  }
+
+  get filteredVehicles(): any[] {
+    return this.filterCollection(
+      this.createOptions.vehicles,
+      this.vehicleSearch,
+      (vehicle: any) => [
+        vehicle?.license_plate,
+        vehicle?.driver_name,
+      ],
+      this.createDraft.vehicle_id
+    );
+  }
+
+  get filteredDrivers(): any[] {
+    return this.filterCollection(
+      this.createOptions.drivers,
+      this.driverSearch,
+      (driver: any) => [driver?.name],
+      this.createDraft.driver_id
+    );
+  }
+
+  vehicleOptionLabel(vehicle: any): string {
+    if (!vehicle) {
+      return '';
+    }
+
+    const plate = String(vehicle?.license_plate || '').trim();
+    const driverName = String(vehicle?.driver_name || '').trim();
+    return driverName ? `${plate} - ${driverName}` : plate;
+  }
+
+  driverOptionLabel(driver: any): string {
+    return String(driver?.name || '').trim();
+  }
+
+  private filterCollection(
+    items: any[],
+    search: string,
+    valueResolver: (item: any) => Array<string | null | undefined>,
+    selectedId: number | null
+  ): any[] {
+    const normalizedSearch = this.normalizeSearch(search);
+    if (!normalizedSearch) {
+      return items;
+    }
+
+    return items.filter((item) => {
+      if (selectedId && Number(item?.id) === Number(selectedId)) {
+        return true;
+      }
+
+      return valueResolver(item).some((value) => this.normalizeSearch(value).includes(normalizedSearch));
+    });
+  }
+
+  private normalizeSearch(value: any): string {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 
   createInspection() {

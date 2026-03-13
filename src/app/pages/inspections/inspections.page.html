@@ -39,19 +39,27 @@
                 </ion-select>
               </ion-item>
               <ion-item>
+                <ion-label position="stacked">Pesquisar matricula</ion-label>
+                <ion-input [(ngModel)]="vehicleSearch" clearInput placeholder="Ex.: 12-AB-34"></ion-input>
+              </ion-item>
+              <ion-item>
                 <ion-label>Viatura</ion-label>
                 <ion-select [(ngModel)]="createDraft.vehicle_id" (ionChange)="onVehicleChanged(createDraft.vehicle_id)" interface="action-sheet">
-                  @for (vehicle of createOptions.vehicles; track vehicle) {
-                    <ion-select-option [value]="vehicle.id">{{ vehicle.license_plate }}</ion-select-option>
+                  @for (vehicle of filteredVehicles; track vehicle) {
+                    <ion-select-option [value]="vehicle.id">{{ vehicleOptionLabel(vehicle) }}</ion-select-option>
                   }
                 </ion-select>
               </ion-item>
               <ion-item>
+                <ion-label position="stacked">Pesquisar nome do motorista</ion-label>
+                <ion-input [(ngModel)]="driverSearch" clearInput placeholder="Ex.: Joao Silva"></ion-input>
+              </ion-item>
+              <ion-item>
                 <ion-label>Condutor</ion-label>
-                <ion-select [(ngModel)]="createDraft.driver_id" interface="action-sheet">
+                <ion-select [(ngModel)]="createDraft.driver_id" (ionChange)="onDriverChanged(createDraft.driver_id)" interface="action-sheet">
                   <ion-select-option [value]="null">Sem condutor</ion-select-option>
-                  @for (driver of createOptions.drivers; track driver) {
-                    <ion-select-option [value]="driver.id">{{ driver.name }}</ion-select-option>
+                  @for (driver of filteredDrivers; track driver) {
+                    <ion-select-option [value]="driver.id">{{ driverOptionLabel(driver) }}</ion-select-option>
                   }
                 </ion-select>
               </ion-item>
