@@ -270,8 +270,8 @@
             </div>
           }
           <ion-buttons>
-            <ion-button color="medium" (click)="saveStep('save')">Guardar dano</ion-button>
-            <ion-button color="primary" (click)="saveStep('complete')">Concluir</ion-button>
+            <ion-button color="medium" (click)="saveStep('save')" [disabled]="isSavingStep">Guardar dano</ion-button>
+            <ion-button color="primary" (click)="saveStep('complete')" [disabled]="isSavingStep">Concluir</ion-button>
           </ion-buttons>
         </ion-card-content>
       </ion-card>

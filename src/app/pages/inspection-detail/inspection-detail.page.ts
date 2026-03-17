@@ -116,6 +116,7 @@ export class InspectionDetailPage {
   signatureDataUrls: { responsible: string; driver: string } = { responsible: '', driver: '' };
   private signatureDrawing: { responsible: boolean; driver: boolean } = { responsible: false, driver: false };
   private autoAdvancing = false;
+  isSavingStep = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -379,6 +380,10 @@ export class InspectionDetailPage {
   }
 
   saveStep(action: 'save' | 'complete') {
+    if (this.isSavingStep) {
+      return;
+    }
+
     const step = Number(this.inspection?.current_step || 1);
     const formData = new FormData();
     formData.append('step', String(step));
@@ -507,9 +512,20 @@ export class InspectionDetailPage {
       }
     }
 
+    this.isSavingStep = true;
+
     this.api.appInspectionUpdateStep(this.accessToken, this.inspectionId, formData).subscribe({
-      next: () => this.loadInspection(),
-      error: (err) => this.functions.errors(err)
+      next: () => {
+        if (step === 8 || step === 9) {
+          this.resetDamageDraft();
+        }
+        this.loadInspection();
+        this.isSavingStep = false;
+      },
+      error: (err) => {
+        this.isSavingStep = false;
+        this.functions.errors(err);
+      }
     });
   }
 
@@ -544,6 +560,17 @@ export class InspectionDetailPage {
 
   private isRoutineInspection(): boolean {
     return String(this.inspection?.type || '') === 'routine';
+  }
+
+  private resetDamageDraft() {
+    this.draft.damage = {
+      location: '',
+      part: '',
+      part_section: '',
+      damage_type: '',
+      damage_notes: ''
+    };
+    this.filesMap['damage'] = [];
   }
 
   beginSignature(role: 'responsible' | 'driver', event: any, canvas: HTMLCanvasElement) {
