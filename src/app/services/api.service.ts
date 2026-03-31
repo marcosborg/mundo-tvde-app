@@ -51,6 +51,10 @@ export class ApiService {
     return this.http.get(this.baseUrl + 'public/article/' + article_id, this.httpOptions);
   }
 
+  page(pageId: any) {
+    return this.http.get(this.baseUrl + 'public/page/' + pageId, this.httpOptions);
+  }
+
   cars() {
     return this.http.get(this.baseUrl + 'public/cars', this.httpOptions);
   }
@@ -61,6 +65,30 @@ export class ApiService {
 
   standCars() {
     return this.http.get(this.baseUrl + 'public/stand-cars', this.httpOptions);
+  }
+
+  ownCar() {
+    return this.http.get(this.baseUrl + 'public/own-car', this.httpOptions);
+  }
+
+  courier(courierId: any) {
+    return this.http.get(this.baseUrl + 'public/courier/' + courierId, this.httpOptions);
+  }
+
+  training() {
+    return this.http.get(this.baseUrl + 'public/training', this.httpOptions);
+  }
+
+  consulting() {
+    return this.http.get(this.baseUrl + 'public/consulting', this.httpOptions);
+  }
+
+  transferTours() {
+    return this.http.get(this.baseUrl + 'public/transfer-tours', this.httpOptions);
+  }
+
+  transferTour(transferTourId: any) {
+    return this.http.get(this.baseUrl + 'public/transfer-tour/' + transferTourId, this.httpOptions);
   }
 
   // PRIVATE

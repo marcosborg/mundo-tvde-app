@@ -1,0 +1,30 @@
+.banner {
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.banner ion-img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+}
+
+.page-title {
+  margin: 0 0 1rem;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+.page-description,
+.page-body {
+  line-height: 1.6;
+}
+
+.page-description {
+  margin-bottom: 1rem;
+}
+
+.page-body :is(img, iframe) {
+  max-width: 100%;
+}

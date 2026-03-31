@@ -11,7 +11,6 @@ import {
   IonToolbar,
   IonTitle,
   IonMenuToggle,
-  IonButton,
   IonList,
   IonItem,
 } from '@ionic/angular/standalone';

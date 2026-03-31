@@ -26,6 +26,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/article/article.page').then(m => m.ArticlePage)
   },
   {
+    path: 'content/:kind',
+    loadComponent: () => import('./pages/content/content.page').then(m => m.ContentPage)
+  },
+  {
+    path: 'content/:kind/:id',
+    loadComponent: () => import('./pages/content/content.page').then(m => m.ContentPage)
+  },
+  {
     path: 'cars',
     loadComponent: () => import('./pages/cars/cars.page').then(m => m.CarsPage)
   },
@@ -44,6 +52,14 @@ export const routes: Routes = [
   {
     path: 'assistente-motorista',
     loadComponent: () => import('./pages/assistente-motorista/assistente-motorista.page').then(m => m.AssistenteMotoristaPage)
+  },
+  {
+    path: 'transfer-tours',
+    loadComponent: () => import('./pages/transfer-tours/transfer-tours.page').then(m => m.TransferToursPage)
+  },
+  {
+    path: 'transfer-tour/:id',
+    loadComponent: () => import('./pages/transfer-tour/transfer-tour.page').then(m => m.TransferTourPage)
   },
   {
     path: 'inspections',

@@ -1,0 +1,30 @@
+<app-public-header></app-public-header>
+
+<ion-content fullscreen class="ion-padding">
+  <ion-button fill="clear" size="small" (click)="goBack()" class="back-button">
+    ← Voltar
+  </ion-button>
+
+  <h1 class="page-title">Transfers e Tours</h1>
+
+  @for (item of transferTours; track item.id) {
+    <ion-card button="true" (click)="openTransferTour(item)">
+      @if (coverImage(item)) {
+        <ion-img [src]="coverImage(item)" [alt]="item.name"></ion-img>
+      }
+      <ion-card-header>
+        <ion-card-title>{{ item.name }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div [innerHTML]="item.description"></div>
+        <p class="price">
+          @if (item.under_consultation) {
+            Preço sob consulta
+          } @else {
+            € {{ item.price }}
+          }
+        </p>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

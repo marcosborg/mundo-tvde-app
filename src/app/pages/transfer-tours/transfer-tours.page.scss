@@ -1,0 +1,20 @@
+.page-title {
+  margin: 0 0 1rem;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+ion-card {
+  overflow: hidden;
+}
+
+ion-img {
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.price {
+  margin-top: 1rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}

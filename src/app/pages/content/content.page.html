@@ -1,0 +1,27 @@
+<app-public-header></app-public-header>
+
+<ion-content fullscreen class="ion-padding">
+  <ion-button fill="clear" size="small" (click)="goBack()" class="back-button">
+    ← Voltar
+  </ion-button>
+
+  @if (imageUrl) {
+    <div class="banner">
+      <ion-img [src]="imageUrl" [alt]="title"></ion-img>
+    </div>
+  }
+
+  <ion-card>
+    <ion-card-content>
+      <h1 class="page-title">{{ title }}</h1>
+
+      @if (descriptionHtml) {
+        <div class="page-description" [innerHTML]="descriptionHtml"></div>
+      }
+
+      @if (bodyHtml) {
+        <div class="page-body" [innerHTML]="bodyHtml"></div>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>

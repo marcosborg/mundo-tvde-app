@@ -16,21 +16,81 @@
 
       <ion-menu-toggle auto-hide="true">
         @if (access_token) {
-          <ion-item routerLink="/tabs" routerDirection="root" detail="false">Área do
-          motorista</ion-item>
+          <ion-item routerLink="/tabs" routerDirection="root" detail="false">Área do motorista</ion-item>
         }
         @if (!access_token) {
-          <ion-item routerLink="/login" routerDirection="root" detail="false">Área do
-          motorista</ion-item>
+          <ion-item routerLink="/login" routerDirection="root" detail="false">Área do motorista</ion-item>
         }
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
-        <ion-item routerLink="/cars" routerDirection="root" detail="false">Aluguer de viaturas</ion-item>
+        <ion-item routerLink="/cars" routerDirection="root" detail="false">Aluguer</ion-item>
       </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/own-car" routerDirection="root" detail="false">Slot</ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/page/7" routerDirection="root" detail="false">Seguros</ion-item>
+      </ion-menu-toggle>
+
+      <ion-item disabled detail="false">Bolsa TVDE</ion-item>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/courier/1" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Bolsa de proprietários TVDE
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/courier/2" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Bolsa de motoristas TVDE
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-item disabled detail="false">Rent a Car (em desenvolvimento)</ion-item>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item routerLink="/stand-cars" routerDirection="root" detail="false">Stand</ion-item>
+      </ion-menu-toggle>
+
+      <ion-item disabled detail="false">A empresa</ion-item>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/page/1" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Sobre nós
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/page/2" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Parceiros
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/page/3" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Contactos
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/training" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Formação
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/content/consulting" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Consultadoria
+        </ion-item>
+      </ion-menu-toggle>
+
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerLink="/transfer-tours" routerDirection="root" detail="false" style="--padding-start: 32px;">
+          Transfers e Tours
+        </ion-item>
       </ion-menu-toggle>
 
       @if (!access_token) {
@@ -48,7 +108,6 @@
           </ion-item>
         </ion-menu-toggle>
       }
-
     </ion-list>
   </ion-content>
 </ion-menu>

@@ -1,0 +1,35 @@
+<app-public-header></app-public-header>
+
+<ion-content class="ion-padding">
+  <ion-button fill="clear" size="small" (click)="goBack()" class="back-button">
+    ← Voltar
+  </ion-button>
+
+  <swiper-container slides-per-view="1" pagination="true" navigation="true" class="tour-swiper">
+    @for (photo of transferTour?.photo || []; track photo) {
+      <swiper-slide>
+        <img [src]="photo.url" [alt]="transferTour?.name || 'Transfer Tour'" class="tour-image" />
+      </swiper-slide>
+    }
+  </swiper-container>
+
+  @if (transferTour) {
+    <ion-card>
+      <ion-card-content>
+        <h1 class="page-title">{{ transferTour.name }}</h1>
+
+        <ion-text color="primary">
+          <h2 class="price">
+            @if (transferTour.under_consultation) {
+              Preço sob consulta
+            } @else {
+              € {{ transferTour.price }}
+            }
+          </h2>
+        </ion-text>
+
+        <div class="page-body" [innerHTML]="transferTour.description"></div>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
